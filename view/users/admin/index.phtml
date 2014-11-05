@@ -1,0 +1,19 @@
+<!-- - - - - - - - - - - - - Slider - - - - - - - - - - - - - - - -->
+<?php require 'module/Users/view/users/utils/index_label.php';?>
+<div class="wrap">
+	<div class="adminMenu">
+		<a href="admin">home</a><br>
+		<div>
+			<form action="/admin/getUserByEmail">
+				<input name="email" placeholder="email">
+				<button class="button_js">submit</button>
+			</form>
+		</div>
+	</div>
+	<div class="showInfo">
+		<p>Total No of users :<?php echo $total;?></p>
+	</div>
+</div>
+<!--/ .wrap-->
+
+<!-- - - - - - - - - - - - - end Slider - - - - - - - - - - - - - - -->

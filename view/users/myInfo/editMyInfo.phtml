@@ -1,0 +1,37 @@
+
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+        <br>
+        <div>编辑我的信息</div>    
+        <form action="/" method="post">
+        <table id="edit_my_info_table">
+            <tr>
+                <th class="showInfoTd"><?php echo $user_labels['firstName'] ?></th>
+    	        <td><input id="first_name_input" name="first_name"></td>
+            </tr>
+            <tr>
+                <th class="showInfoTd"><?php echo $user_labels['lastName'] ?></th>
+    	        <td><input id="last_name_input" name="last_name"></td>
+            </tr>
+            <tr>
+                <th class="showInfoTd"><?php echo $user_labels['selfDescript'] ?></th>
+    	        <td><input id="self_descript_input" name="self_descript"></td>
+            </tr>
+            <tr>
+                <th class="showInfoTd"><?php echo $user_labels['position'] ?></th>
+    	        <td><input id="title_input" name="title"></td>
+            </tr>
+            <tr>
+                <th class="showInfoTd"><?php echo $user_labels['address'] ?></th>
+    	        <td><input id="address_input" name="address"></td>
+            </tr>
+            <tr>
+                <th class="showInfoTd"></th>
+    	        <td><input type="submit" id="submit_p_info_button" value="<?php echo $user_labels['update']?>"></td>
+            </tr>
+        </table>
+        </form>
+        <div>
+        更新👦<input type="file">
+        </div>

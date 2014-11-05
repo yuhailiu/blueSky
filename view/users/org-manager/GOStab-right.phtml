@@ -1,0 +1,52 @@
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<!-- js data -->
+<input id="delete_member_sure" type="hidden" value="<?php echo $user_labels['delete_member_sure']?>">
+<div id="org_structure_div" style="width: 800px" class="mycenter">
+<br>
+    <div id="org_creater_div" class="mycenter" style="width: 120px;" >
+    <a href="#"><img id="createrImg" class="structurePic ui-state-default ui-corner-all" alt="creatorImg">
+        <label id="createrName"></label>
+    </a>
+    </div>
+    <br>
+    <br>
+    <ul id="members_ul" class="clearfix ">
+     </ul>
+     <div style="margin-left: 20px;"> 
+     <div id="org_member_paginator_div" class="mycenter"></div>
+     </div>
+</div>
+<!-- hide the dialog window for every pic -->
+<?php for ($i = 1 ; $i <11 ; $i++) :?>
+<div id="<?php echo "orchart_dialog_div".$i ?>" title="<?php echo $user_labels['userInfo']?>">
+    <table>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['firstName']?></td>
+            <td class="showInfoTd first_name_dialog_td">
+        </tr>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['lastName']?></td>
+            <td class="showInfoTd last_name_dialog_td">
+        </tr>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['position']?></td>
+            <td class="showInfoTd position_dialog_td">
+        </tr>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['telephone1']?></td>
+            <td class="showInfoTd telephone1_dialog_td">
+        </tr>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['telephone2']?></td>
+            <td class="showInfoTd telephone2_dialog_td">
+        </tr>
+        <tr>
+            <td class="showInfoTd"><?php echo $user_labels['address']?></td>
+            <td class="showInfoTd address_dialog_td">
+        </tr>
+    </table>
+</div>
+<?php endfor;?>
+

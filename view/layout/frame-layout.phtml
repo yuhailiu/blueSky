@@ -1,0 +1,64 @@
+<?php
+echo $this->doctype();
+require 'module/Users/view/users/utils/index_label.php';
+?>
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <?php echo $this->headTitle($this->translate('ttruus'))->setSeparator(' - ')->setAutoEscape(false)?>
+
+        <?php echo $this->headMeta()->appendName('viewport', 'width=device-width, initial-scale=1.0')?>
+        <meta name="description" content="" />
+<meta name="author" content="ttruus" />
+<meta name="keywords" content="share, targets, communication, 分享, 目标, 沟通" />
+<meta name="description" content="Improve communication with targts, have fun in work and manage targets" />
+<meta name="description" content="提高基于目标的有效沟通，增加工作中的趣味" />
+<!-- styles -->
+<link type="text/css" rel="stylesheet" media="screen"
+	href="/css/bootstrap.min.css">
+<link type="text/css" rel="stylesheet" media="screen"
+	href="/css/jquery.fileupload.css">
+<link type="text/css" rel="stylesheet" media="screen"
+	href="/css/1140.css">
+<link type="text/css" rel="stylesheet" media="screen"
+	href="/css/start/jquery-ui-1.10.3.custom.min.css">
+<link type="text/css" rel="stylesheet" media="screen"
+	href="/css/style.css">
+<!-- scripts -->
+<script src="/js/jquery-1.9.1.js"></script>
+
+<script src="/js/jquery-ui-1.10.3.custom.js" type="text/javascript"></script>
+
+<!--  ttruus ico -->
+        <?php
+        
+        echo $this->headLink(array(
+            'rel' => 'shortcut icon',
+            'type' => 'image/vnd.microsoft.icon',
+            'href' => $this->basePath() . '/images/h.ico'
+        ))?>
+        
+        <!-- customer style by Yuhai -->
+<link href="/css/myStyle.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body class="h-style-1 text-1" hidden="hidden">
+    <!-- js disable label -->
+	<div id="jscheck">
+		<br>
+		<h1 class="error"><?php echo $labels['noJs']?></h1>
+	</div>
+	<div id="jsHtml5Ok" hidden="hidden">
+	<!-- top_panel of user's pages -->
+        <?php echo $this->partial('layout/top.phtml');?>
+        <!-- beging the container --> 
+        <?php echo $this->content; ?>
+        <!-- footer of pages -->    
+        <?php echo $this->partial('layout/footer_account.phtml');?>
+    </div>     
+</body>
+</html>
+

@@ -1,0 +1,9 @@
+<?php
+include_once 'module/Users/view/layout/top_panel.php';
+$this->headTitle()->prepend('ShowImg');
+?>
+<section id="showImg">
+<img src="<?php echo $this->url('users/media',
+            array('action'=>'showImage', 'id' => $user->id, 'subaction' => 'full'));?>" />
+</section>
+<a href="<?php echo $this->url('users/login', array('action' => 'confirm'));?>">&raquo; 返回</a>

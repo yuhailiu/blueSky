@@ -1,0 +1,56 @@
+
+<?php
+$this->headTitle()->prepend('Home');
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<!-- get the url from session -->
+<input type="hidden" id="owner_photo_img_url"
+	value="/users/media/showImage/<?php echo $_SESSION['email']?>">
+<div class="wrap background">
+	<div class="app-sidebar">
+		<div>
+			<div class="logo mycenter"><?php echo $user_labels['mylogo']?></div>
+		</div>
+		<div class="menue">
+			<div class="ui-state-default mainMenu" id="targets_a">
+				<span class="ui-icon ui-icon-check menueSpan"></span><span
+					class="menueA"><?php echo $user_labels['targets']?></span>
+			</div>
+			<div class="ui-state-default mainMenu" id="close_target_li">
+				<span class="ui-icon ui-icon-folder-collapsed menueSpan"></span><span
+					class="menueA"><?php echo $user_labels['closedTargets']?></span>
+			</div>
+			<div class="ui-state-default mainMenu helper_a" id="helper_a">
+				<span class="ui-icon ui-icon-person menueSpan"></span><span
+					class="menueA"><?php echo $user_labels['helpers']?></span>
+			</div>
+		</div>
+		<div class="ownerInfo mainMenu" title="<?php echo $user_labels['userInfo']?>">
+			<div id="showPhoto" class="showPhoto">
+				<img id="owner_photo_img"
+					alt="<?php echo $user_labels[pleaseUpdate]?>"
+					class="ui-state-default ui-corner-all">
+			</div>
+			<div id="showName">
+				<span id="owner_first_name"></span><span id="owner_last_name"></span>
+			</div>
+		</div>
+	</div>
+	<div class="app-content">
+		<!-- target -->
+		<div id="targets_div" class="content">
+        <?php echo $this->partial("users/target/targets")?>
+    </div>
+		<!-- helper -->
+		<div id="helper_div" class="content">
+        <?php echo $this->partial('users/helper/helperInfo')?>
+    </div>
+		<!-- owner infomation -->
+		<div id="show_my_info_div" class="content">
+        <?php echo $this->partial('users/myInfo/myInfo')?>	
+    </div>
+	</div>
+</div>
+
+<!-- home.js -->
+<script src="/js/home.js"></script>

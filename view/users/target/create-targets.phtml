@@ -1,0 +1,31 @@
+
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<div class="content-title">
+	<div class="ui-corner-all">创建新目标</div>
+</div>
+<div class="content-left">
+
+</div>
+<div class="content-right">
+	<div class="create_sub-target" hidden="hidden">
+		<div><?php echo $user_labels['subTarget']?>？</div>
+		<form action="" class="target_create">
+			<input name="target_name" class="ui-corner-all"
+				placeholder="<?php echo $user_labels['targetName']?>"><br> <input
+				name="target_end_time" class="ui-corner-all"
+				placeholder="<?php echo $user_labels['targetEndTime']?>"><br>
+			<textarea name="target_content" class="ui-corner-all"
+				placeholder="<?php echo $user_labels['targetDescript']?>"></textarea>
+			<br> <select name="receiver" class="ui-corner-all receiver_select">
+				<option><?php echo $user_labels['selectReceiver']?></option>
+			</select><br>
+			<button type="submit" class="js_button" id="create_sub_target_submit"
+				title="<?php echo $user_labels['submit']?>">
+				<span class="ui-icon ui-icon-check"></span>
+			</button>
+		</form>
+	</div>
+</div>
+

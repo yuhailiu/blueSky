@@ -1,0 +1,29 @@
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+		  <div class="tab-left">
+			<div id="showPhoto">
+                <?php 
+                echo $this->partial('layout/showTnPhoto1.phtml');
+                ?>
+            </div>
+            <br>
+            <br>
+            <dl class="shortcut-menue">
+                <dt><?php echo $user_labels[shortCutChannel]?></dt>
+                <dd>
+                    <ul>
+                        <li  class="ui-state-default ui-corner-all iconSize" title=".ui-icon-locked">
+                            <a target="_blank" href="/users/setting/changePassword"><span class="ui-icon ui-icon-locked"></span></a>
+                        </li>
+                        <li class="iconText">
+                            <a target="_blank" href="/users/setting/changePassword"><?php echo $user_labels[changePassword]?></a>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+          </div>
+          
+          
+
+

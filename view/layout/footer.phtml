@@ -1,0 +1,49 @@
+<?php require 'module/Users/view/users/utils/index_label.php';?>
+<div id="foot">
+	<!--footer with copy right  -->
+	<div class="wrap">
+
+		<footer id="footer" class="clearfix">
+			<div id="myfooter">
+				<a href="/info/about"><?php echo $labels[about]?> |</a> <a
+					href="/info/join"><?php echo $labels[join]?> |</a> <a
+					href="/info/investors"><?php echo $labels[investors]?> |</a> <a
+					href="/info/help"> <?php echo $labels[feedback]?> |</a> <a
+					href="/info/terms"> <?php echo $labels[privateRight]?></a>
+			</div>
+			<div class="adjective clearfix">
+				<div class="copyright">Copyright &copy; 2013-
+<?php
+date_default_timezone_set('Asia/Shanghai');
+echo date('Y');
+?>
+. by ttruus Technologies Ltd. All rights reserved</div>
+				<div class="icp"><a href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备14025108</a></div>
+			</div>
+
+			<!--/ .adjective-->
+		</footer>
+		<!--/ #footer-->
+	</div>
+	<!-- /wrao -->
+</div>
+<!-- some global value for js -->
+<input id="alertTimeout" value="<?php echo $labels[alertTimeout]?>"
+	type="hidden">
+<!-- validation js -->
+<script src="/js/jquery.validate.js"></script>
+<?php
+if ($_SESSION['language'] == 'zh') {
+    echo "<script src='/js/localization/messages_zh.js'></script>";
+    echo "<script src='/js/myLocalization/messages_zh.js'></script>";
+} else {
+    echo "<script src='/js/localization/messages_en.js'></script>";
+    echo "<script src='/js/myLocalization/messages_en.js'></script>";
+}
+?>
+<!-- <script src="/js/localization/messages_zh.js"></script> -->
+<script src="/js/jquery.validate.regex.js"></script>
+<script src="/js/jquery.form.min.js" type="text/javascript"></script>
+<script src="/js/4helper.js" type="text/javascript"></script>
+
+

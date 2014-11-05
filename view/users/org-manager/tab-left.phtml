@@ -1,0 +1,60 @@
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+		  <div class="tab-left">
+			<div id="showPhoto">
+                <?php 
+                //echo $this->partial('users/org-manager/showLogoPic.phtml');
+                echo $this->partial('layout/showTnPhoto.phtml', array(
+                    'key' => $org->id,
+                    'subaction' => 'logoThumb',
+                    'title' => $org->org_name,
+                    'dialogUrl' => $org->id."/logo"
+                ));
+                ?>
+                <br>
+                <span id="uploadError" class="error" hidden="hidden"><?php echo $user_labels[uploadError]?></span>&nbsp;&nbsp;  
+	           <div>
+                    <?php
+                    $form = $this->form;
+                    $form->prepare();
+                    $form->setAttribute('action', $this->url('users/media', array(
+                        'controller' => 'Media',
+                        'action' => 'processUpload'
+                    )));
+                    $form->setAttribute('method', 'post');
+                    $form->setAttribute('id', 'fileupload');
+                    
+                    echo $this->form()->openTag($form);
+                    ?>
+                    <!-- file upload type  -->
+                    <input type="hidden" name="uploadType" value="1">
+                    <span class="btn btn-success fileinput-button" style="margin-left: 16px;"><i
+						class="glyphicon glyphicon-plus" ></i><span><?php echo $user_labels[updateLogo]?></span>
+                    		      <?php
+                            echo $this->formElement($form->get('imageupload'));
+                            echo $this->formElementErrors($form->get('imageupload'));
+                            ?>
+                    </span> <br>
+                    <?php echo $this->form()->closeTag()?>
+                </div>
+            </div>
+            <br>
+            <dl class="shortcut-menue">
+                <dt><?php echo $user_labels[shortCutChannel]?></dt>
+                <dd>
+                    <ul>
+                        <li  class="ui-state-default ui-corner-all iconSize" title=".ui-icon-locked">
+                            <a target="_blank" href="/users/setting/changePassword"><span class="ui-icon ui-icon-locked"></span></a>
+                        </li>
+                        <li class="iconText">
+                            <a target="_blank" href="/users/setting/changePassword"><?php echo $user_labels[changePassword]?></a>
+                        </li>
+                    </ul>
+                </dd>
+            </dl>
+          </div>
+          
+          
+
+

@@ -1,0 +1,25 @@
+<?php
+$this->headTitle()->prepend('create task');
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<!-- prepare information -->
+
+<div class="wrap">
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-1"><?php echo $user_labels[createTask]?></a></li>
+
+		</ul>
+		<div id="tabs-1" style="height: 800px">
+		  <div class="tab-left">
+		      <?php echo $this->partial('users/task/tab-left.phtml');?>
+		  </div>
+		  <div id="edit_task_tab_right" class="tab-right">
+		      <?php echo $this->partial('users/task/tab-right.phtml');?>
+		  </div>
+		  
+		</div>
+	</div>
+</div>
+
+<script src="/js/createTask.js" type="text/javascript"></script>

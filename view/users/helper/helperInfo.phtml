@@ -1,0 +1,69 @@
+
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<div class="content-title">
+	<div class="ui-corner-all helper"><?php echo $user_labels['myHelpers']?></div>
+	<div id="helpers_tag" class="ui-corner-all helper">
+		<table>
+			<tr>
+				<td title="helpers"><span class="ui-icon ui-icon-person"></span></td>
+				<td id="helper_number">0</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<div class="ui-state-default ui-corner-all helperAttionShow"
+	id="helperAttionShow">
+	<span class="ui-icon ui-icon-help"></span>
+</div>
+<div class="helper_attention error">
+<?php echo $user_labels['helperAttention']?>
+</div>
+<div class="helpers_group" id="helperGroup">
+	<p><?php echo $user_labels['helpers']?></p>
+	<div class="personalInfo ui-corner-all" id="addHelper_div"
+		title="add helper">
+		<div class="ui-state-default ui-corner-all"
+			style="margin-top: 3px; width: 16px; margin-left: 60px;">
+			<span class="ui-icon ui-icon-plus"></span>
+		</div>
+	</div>
+</div>
+<div class="helpers_group" id="invitation_group">
+	<p><?php echo $user_labels['invitations']?></p>
+</div>
+<div id="dialog_show_helper" title="Helper information">
+	<div>
+		<img alt="photo" src="images/defaultphoto.jpg"
+			class="bigHelperPhoto ui-corner-all">
+	</div>
+	<div class="helperInfo">
+		<p class="name_p">
+			<span id="first_name_span"></span><span id="last_name_span"></span>
+		</p>
+		<p id="helper_email"></p>
+		<p id="selfDescription"></p>
+	</div>
+</div>
+<div id="dialog_add_helper"
+	title="<?php echo $user_labels['addHelper']?>">
+	<form action="helper/addHelper" class="target_create"
+		id="add_helper_form">
+		<input name="first_name" type="hidden" class="owner_first_name"> <input
+			name="email" type="email" class="ui-corner-all" autofocus="autofocus"
+			placeholder="<?php echo $user_labels['email']?>"><br>
+		<textarea name="message" class="ui-corner-all" rows="5"
+			placeholder="<?php echo $user_labels['greeting']?>"></textarea>
+		<br>
+		<button class="js_button" id="add_helper_submit" style="clear: both"
+			title="<?php echo $user_labels['submit']?>">
+			<span class="ui-icon ui-icon-check"></span>
+		</button>
+		<img alt="loading" class="loading" src="images/loading.gif"
+			id="add_helper_loading" hidden="hidden">
+	</form>
+</div>
+<!-- helper.js -->
+<script src="/js/helper.js"></script>
+<script src="/js/bootstrap-paginator.min.js"></script>

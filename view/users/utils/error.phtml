@@ -1,0 +1,10 @@
+<!-- prepare information -->
+<input type="hidden" id="user_email_value" value="<?php echo $user->email; ?>">
+
+<?php if ($this->error): ?>
+    <div class="wrap">
+        <p class="error">There were one or more isues with
+					your submission. Please return your last page.</p>
+		<p><?php echo $message?></p>
+	</div>
+<?php endif ?>

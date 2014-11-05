@@ -1,0 +1,27 @@
+<!-- show pending request -->
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<div>
+<br>
+    <input id="orgId" type="hidden" value="<?php echo $org->id?>">
+    <table style="margin-left: 20px" id="show_pending_request_table">
+        <tr>
+            <td class="showInfoTd">
+            <?php echo $user_labels['requestName']?>
+            </td>
+            <td class="showInfoTd">
+            <?php echo $user_labels['requestTime']?>
+            </td>
+            <td class="showInfoTd">
+            <?php echo $user_labels['requestAdditionInfo']?>
+            </td>
+            <td class="showInfoTd">
+            <?php echo $user_labels['respondAction']?>
+            </td>
+        </tr>
+    </table>
+    <div id="requestJ_pending_page_div"></div>
+</div>
+
+<script src="/js/bootstrap-paginator.min.js"></script>

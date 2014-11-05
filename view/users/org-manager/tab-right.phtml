@@ -1,0 +1,102 @@
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+                 <!-- userSetForm -->
+			     <br>
+            <div id="showInfo">
+                <div class="error mycenter" id="settingError" hidden="hidden" style="width: 200px;"><?php echo $user_labels[systemBusy]?></div>
+                
+                <?php
+                    $form = $this->orgSetForm;
+                    $form->prepare();
+                    $form->setAttribute('action', $this->url('users/orgmanager', array(
+                        'action' => 'process'
+                    )));
+                    $form->setAttribute('method', 'post');
+                    $form->setAttribute('id', 'orgSet');
+                    
+                    echo $this->form()->openTag($form);
+                    ?>
+                <script type="text/javascript">
+                $(function(){
+                	$("#org_name").attr("value", $("#org_name_value").val());
+                	$("#org_website").attr("value", $("#org_website_value").val());
+                	$("#org_tel").attr("value", $("#org_tel_value").val());
+
+                	//different method for textarea field
+                	document.getElementById('org_des').value=$("#org_des_value").val();
+                	document.getElementById('org_address').value=$("#org_address_value").val();
+                });
+                </script>
+                <input type="hidden" id="id" name="id" value=<?php echo $org->id?>>
+                <table>
+    			     <tr>
+    			         <th class="showInfoTd"><?php echo $this->formLabel($form->get('org_name')); ?></th>
+    			         <td >
+    			             <input type="hidden" id="org_name_value" value="<?php echo $org->org_name;?>">
+    			             <?php 
+                                echo $this->formElement($form->get('org_name'));
+                                echo $this->formElementErrors($form->get('org_name'));
+                             ?>
+    			         </td>
+    			     </tr>
+    			     <tr>
+    			         <th class="showInfoTd"><?php echo $this->formLabel($form->get('org_website')); ?></th>
+    			         <td>
+    			         <input type="hidden" id="org_website_value" value="<?php echo $org->org_website;?>">
+    			             <?php 
+                                echo $this->formElement($form->get('org_website'));
+                                echo $this->formElementErrors($form->get('org_website'));
+                             ?>
+    			         </td>
+    			     </tr>
+    			     <tr>
+    			         <th class="showInfoTd"><?php echo $this->formLabel($form->get('org_tel')); ?></th>
+    			         <td>
+    			         <input type="hidden" id="org_tel_value" value="<?php echo $org->org_tel;?>">
+    			             <?php 
+                                echo $this->formElement($form->get('org_tel'));
+                                echo $this->formElementErrors($form->get('org_tel'));
+                             ?>
+    			         </td>
+    			     </tr>
+    			     <tr>
+    			         <th class="showInfoTd"><?php echo $this->formLabel($form->get('org_des')); ?></th>
+    			         <td>
+    			         <input type="hidden" id="org_des_value" value="<?php echo $org->org_des;?>">
+    			             <?php 
+                                echo $this->formElement($form->get('org_des'));
+                                echo $this->formElementErrors($form->get('org_des'));
+                             ?>
+    			         </td>
+    			     </tr>
+    			     <tr>
+    			         <th class="showInfoTd"><?php echo $this->formLabel($form->get('org_address')); ?></th>
+    			         <td>
+    			         <input type="hidden" id="org_address_value" value="<?php echo $org->org_address;?>">
+    			             <?php 
+                                echo $this->formElement($form->get('org_address'));
+                                echo $this->formElementErrors($form->get('org_address'));
+                             ?>
+    			             
+<!--     			         <textarea id="address" rows="8" cols="80"></textarea> -->
+    			         </td>
+    			     </tr>
+    		      </table>
+    		      <br>
+    			         <?php
+                            echo $this->formElement($form->get('submit'));
+                            echo $this->formElementErrors($form->get('submit'));
+                        ?>
+                <?php echo $this->form()->closeTag()?>
+                </div>
+        	<div style="width:20px;"  class="mycenter">
+                <img id="loadingImg" hidden="hidden" alt="" src="/images/loading.gif">
+        	</div>
+        	<div id="successUpdate" style="width: 650px" hidden="hidden" class="mycenter">
+        	       <br>
+        	       <br>
+        	       <br>
+        	       <h3>团队信息已经成功更新， 5秒钟后本网页会自动关闭</h3>
+        	</div>
+				  

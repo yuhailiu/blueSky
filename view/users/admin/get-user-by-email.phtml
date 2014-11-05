@@ -1,0 +1,47 @@
+<!-- - - - - - - - - - - - - Slider - - - - - - - - - - - - - - - -->
+<?php require 'module/Users/view/users/utils/index_label.php';?>
+<div class="wrap">
+	<div class="adminMenu">
+		<a href="admin">home</a><br>
+		<div>
+			<form action="/admin/getUserByEmail">
+				<input name="email" placeholder="email">
+				<button class="button_js">submit</button>
+			</form>
+		</div>
+	</div>
+	<div class="showInfo">
+		<div>
+	<?php
+if ($message) {
+    echo $message;
+}
+?>
+	</div>
+		<table>
+			<tr>
+				<th>email</th>
+			</tr>
+			<tr>
+				<td><?php echo $user['email']?></td>
+				<td><?php echo $user['first_name']?></td>
+				<td><?php echo $user['last_name']?></td>
+				<td><?php echo $user['id']?></td>
+				<td><?php echo $user['isClose']?></td>
+				<td><form action="/admin/updateUserByEmail">
+						<input name="email" value="<?php echo $user['email']?>" type="hidden">
+						<input name="action" value="close" type="hidden">
+						<button>close</button>
+					</form></td>
+				<td><form action="/admin/updateUserByEmail">
+						<input name="email" value="<?php echo $user['email']?>" type="hidden">
+						<input name="action" value="open" type="hidden">
+						<button>open</button>
+					</form></td>
+			</tr>
+		</table>
+	</div>
+</div>
+<!--/ .wrap-->
+
+<!-- - - - - - - - - - - - - end Slider - - - - - - - - - - - - - - -->

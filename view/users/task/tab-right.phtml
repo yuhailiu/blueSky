@@ -1,0 +1,125 @@
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<div id="success_insert_div" hidden="hidden" style="margin-left: 10px;">
+<div class="success mycenter">
+<?php echo $user_labels['createTaskSuccess']?>!
+</div>
+<div>
+    <a href="#" id="create_task_again" style="float: left"><span class="ui-icon ui-icon-plus" style="float: left" ></span><?php echo $user_labels['createAgain']?></a>
+    <a href="/users/login/confirm/3" style="float: left; margin-left: 10px;"><span class="ui-icon ui-icon-close" style="float: left"></span><?php echo $user_labels['returnTaskManagement']?></a>
+</div>
+<br>
+</div>
+
+<br>
+<form action="/task/insertOrUpdateTask" method="post" id="createMainTask">
+<table>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['selectTeam']?></th>
+        <td class="tdFormElement">
+            <select id= "org_id_select" name="org_id" autofocus="autofocus">
+            <option value="<?php echo $_SESSION['org_id']?>"><?php echo $_SESSION['org_name']?></option>
+            <?php foreach ($orgs as $org):?>
+            <option value="<?php echo $org['id']?>"><?php echo $org['org_name']?></option>
+            <?php endforeach;?>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['taskName']?>*</th>
+        <td class="tdFormElement"><input type="text" name="task_name" placeholder="<?php echo $user_labels['taskNamePrompt']?>"></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['taskDescript']?></th>
+        <td class="tdFormElement"><textarea rows="5" name="task_content" placeholder="<?php echo $user_labels['taskDescriptPrompt']?>"></textarea></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['beginTime']?>*</th>
+        <td class="tdFormElement"><input type="text" id="task_begin_time" name="task_begin_time" placeholder="<?php echo date('m/d/Y')?>"></td>
+        <th class="showInfoTd"><?php echo $user_labels['endTime']?>*</th>
+        <td class="tdFormElement"><input type="text" id="task_end_time" name="task_end_time" placeholder="<?php echo date('m/d/Y')?>"></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['taskAsign']?>*</th>
+        <td class="tdFormElement">
+            <div id="task_assign_div">
+            <input type="radio" name="task_assign" id="single_member" value="single"><?php echo $user_labels['asignSigleMember']?>
+            <input type="radio" name="task_assign" id="mutiple_member" value="mutiple"><?php echo $user_labels['asignMutipleMember']?>
+            </div>
+        </td>
+    </tr>
+    <tr id="single_member_td" hidden="hidden">
+        <th class="showInfoTd"></th>
+        <th class="showInfoTd">
+            <?php echo $user_labels['selectReceiver']?>
+        </th>
+        <td class="tdFormElement">
+            <select name="receiver" id="receiver_select">
+                <option value="<?php echo $_SESSION['email']?>"><?php echo $_SESSION['username']?></option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"></th>
+        <td hidden="hidden" style="padding-top: 2em;"><input id="task_submit" type="submit" value="<?php echo $user_labels['submit']?>"></td>
+    </tr>
+</table>
+</form>
+
+<!-- hide the from untill user click the mutiple choice -->
+<div id="success_insert_sub_div" style="margin-left: 10px;" hidden="hidden">
+<br>
+<div class="success mycenter">
+<?php echo $user_labels['createSubTaskSuccess']?>!
+</div>
+<div>
+    <a href="#" id="create_sub_task_again" style="float: left"><span class="ui-icon ui-icon-plus" style="float: left" ></span><?php echo $user_labels['createAgain']?></a>
+    <a href="/users/login/confirm/3" style="float: left; margin-left: 10px;"><span class="ui-icon ui-icon-close" style="float: left"></span><?php echo $user_labels['returnTaskManagement']?></a>
+</div>
+<br>
+</div>
+<form action="/task/insertOrUpdateSubTask" method="post" id="createSubTask" hidden="hidden">
+<input type="hidden" name="task_id" id="task_id_input">
+<table>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['mainTaskName']?></th>
+        <td class="tdFormElement" id="main_task_name"></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['subTaskName']?>*</th>
+        <td class="tdFormElement"><input type="text" name="sub_task_name" placeholder="<?php echo $user_labels['subTaskNamePrompt']?>"></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['taskDescript']?></th>
+        <td class="tdFormElement"><textarea rows="5" name="sub_task_content" placeholder="<?php echo $user_labels['subTaskDescriptPrompt']?>"></textarea></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['beginTime']?>*</th>
+        <td class="tdFormElement"><input type="text" id="sub_task_begin_time" name="sub_task_begin_time" placeholder="<?php echo date('m/d/Y')?>"></td>
+        <th class="showInfoTd"><?php echo $user_labels['endTime']?>*</th>
+        <td class="tdFormElement"><input type="text" id="sub_task_end_time" name="sub_task_end_time" placeholder="<?php echo date('m/d/Y')?>"></td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"><?php echo $user_labels['taskAsign']?>*</th>
+        <th class="showInfoTd">
+            <?php echo $user_labels['selectReceiver']?>
+        </th>
+        <td >
+            <select name="receiver" id="sub_receiver_select">
+                <option value="<?php echo $_SESSION['email']?>"><?php echo $_SESSION['username']?></option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <th class="showInfoTd"></th>
+        <td style="padding-top: 2em;"><input id="sub_task_submit" type="submit" value="<?php echo $user_labels['submit']?>"></td>
+    </tr>
+</table>
+</form>
+
+
+
+
+
+

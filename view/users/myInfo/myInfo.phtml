@@ -1,0 +1,128 @@
+
+<?php
+require 'module/Users/view/users/utils/user_label.php';
+?>
+<div class="content-title">
+	<div class="ui-corner-all">My Account</div>
+</div>
+<div class="content-left">
+	<div class="leftMenu">
+		<div id="profile" class="subMenu">
+			<span class="ui-icon ui-icon-suitcase leftSpan"></span><span><?php echo $user_labels['profile']?></span>
+		</div>
+		<div id="change_photo" class="subMenu">
+			<span class="ui-icon ui-icon-image leftSpan"></span><span><?php echo $user_labels['picture']?>
+				</span>
+		</div>
+		<div id="change_password" class="subMenu">
+			<span class="ui-icon ui-icon-locked leftSpan"></span><span><?php echo $user_labels['password']?></span>
+		</div>
+	</div>
+</div>
+<div class="content-right" style="padding: 0px;">
+	<div id="showProfile" class="showInRight">
+		<div class="titleInRight">
+			<div style="float: left; font-size: 200%"><?php echo $user_labels['profile']?></div>
+			<div style="float: right; margin-top: 5px;"
+				title="<?php echo $user_labels['modify']?>">
+				<button class="js_button" id="edit_my_profile">
+					<span class="ui-icon ui-icon-wrench"></span>
+				</button>
+			</div>
+		</div>
+		<form action="users/setting/updateProfile" id="profileUpdate">
+			<div class="contentInRight">
+				<p id="first_name_p"></p>
+				<input name="first_name" id="first_name_input"
+					placeholder="<?php echo $user_labels['firstName']?>">
+			</div>
+			<div class="contentInRight">
+				<p id="last_name_p"></p>
+				<input name="last_name" id="last_name_input"
+					placeholder="<?php echo $user_labels['lastName']?>">
+			</div>
+			<div class="contentInRight">
+				<p id="email_p"></p>
+			</div>
+			<div class="contentInRight">
+				<p id="language_p">English</p>
+				<select name="language" id="language_select">
+					<option value="en" id="en">English</option>
+					<option value="zh" id="zh">中文</option>
+				</select>
+			</div>
+			<div class="contentInRight">
+				<p id="self_descript_p"></p>
+				<textarea name="self_descript" rows="10" id="self_descript_textarea"
+					placeholder="<?php echo $user_labels['selfDescript']?>"></textarea>
+			</div>
+			<div class="contentInRight">
+				<button class="js_button"
+					title="<?php echo $user_labels['submit']?>">
+					<span class="ui-icon ui-icon-check"></span>
+				</button>
+			</div>
+		</form>
+	</div>
+	<div id="showImage" class="showInRight">
+		<div class="titleInRight">
+			<div style="float: left; font-size: 200%"><?php echo $user_labels['myPicture']?></div>
+		</div>
+		<div class="showBigPhotoDiv mycenter">
+			<img alt="picture" class="bigPhoto">
+		</div>
+		<div style="margin-top: 20px; margin-left: 20px;">
+			<form action="users/media/processUpload" id="fileUpload_form"
+				method="post" enctype="multipart/form-data">
+				<input type="hidden" name="uploadType" value="2">
+				<!-- The fileinput-button span is used to style the file input field as button -->
+				<span class="btn btn-success fileinput-button" style="width: 100px;"><?php echo $user_labels['update']?>
+					<!-- The file input field used as target for the file upload widget -->
+					<input id="fileupload" type="file" name="imageupload"
+					accept="image/*"> </span>
+			</form>
+		</div>
+		<div style="margin-top: 20px; margin-left: 20px;" class="loading">
+			<img alt="loading" src="images/loading.gif">
+		</div>
+		<div class="error" style="margin-left: 20px" id="uploadError"><?php echo $user_labels['uploadError']?>
+        </div>
+	</div>
+	<div id="changPassword" class="showInRight">
+		<div class="titleInRight">
+			<div style="float: left; font-size: 200%"><?php echo $user_labels['changePassword']?></div>
+		</div>
+		<div class="mycenter changePassword">
+			<form action="users/setting/processPassword" id="changePassword_form"
+				method="post">
+				<div>
+					<input name="old_password" type="password"
+						placeholder="<?php echo $user_labels['oldPassword']?>"> <input
+						name="password" type="password" id="password"
+						placeholder="<?php echo $user_labels['newPassword']?>"> <input
+						name="confirm_password" type="password"
+						placeholder="<?php echo $user_labels['confirmPassword']?>">
+				</div>
+				<div style="margin-top: 10px;">
+					<button class="js_button" title="<?php echo $user_labels['submit']?>">
+						<span class="ui-icon ui-icon-check"></span>
+					</button>
+					<div class="loading">
+						<img alt="loading" src="images/loading.gif">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!-- myInfo.js -->
+<script src="/js/myInfo.js"></script>
+<!-- upload file -->
+<!-- The Iframe Transport is required for browsers without support for XHR file uploads -->
+<script src="/js/jquery.iframe-transport.js"></script>
+<!-- The basic File Upload plugin -->
+<script src="/js/jquery.fileupload.js"></script>
+<!-- The File Upload processing plugin -->
+<script src="/js/jquery.fileupload-process.js"></script>
+<!-- The File Upload validation plugin -->
+<script src="/js/jquery.fileupload-validate.js"></script>

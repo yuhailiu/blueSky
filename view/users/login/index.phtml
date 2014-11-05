@@ -1,0 +1,72 @@
+<?php
+require 'module/Users/view/users/utils/index_label.php';
+$this->headTitle()->prepend($labels['login']);
+
+?>
+<!-- - - - - - - - - - - - - - - Main - - - - - - - - - - - - - - - - -->
+<div class="banner">
+	<h1> <?php echo $labels[title3]?> </h1>
+
+</div>
+
+<div class="card signin-card clearfix">
+	<img class="profile-img" alt="img" src="/images/defaultImg.png">
+	<p class="profile-name"></p>
+		<?php
+$form = $this->form;
+$form->prepare();
+$form->setAttribute('action', $this->url(NULL, array(
+    'controller' => 'Login',
+    'action' => 'process'
+)));
+$form->setAttribute('method', 'post');
+$form->setAttribute('id', 'loginform');
+
+echo $this->form()->openTag($form);
+?>		
+			<?php
+echo $this->formElement($form->get('email'));
+echo $this->formElementErrors($form->get('email'));
+?>
+			<br>
+			<?php
+echo $this->formElement($form->get('password'));
+echo $this->formElementErrors($form->get('password'));
+?>
+   <div class="error" id="closedAccount">
+		<p style="float: left"><?php echo $labels['closedAccount']?></p>
+		<div class="ui-state-default ui-corner-all"
+			style="width: 20px; margin-top: 10px; float: right">
+			<a href="mailto:support@4helper.com?subject='Account is closed'"><span
+				class="ui-icon ui-icon-mail-closed"></span></a>
+		</div>
+	</div>
+	<div class="error" id="noMatch">
+		<p>
+            <?php echo $labels[invalidatePassword]?>
+            <br>
+            <?php echo $labels['no']?>&#32;<span id="errorTimes"></span><?php echo $labels['loginErrorTimes']?>
+        </p>
+	</div>
+            <?php
+            echo $this->formElement($form->get('submit'));
+            echo $this->formElementErrors($form->get('submit'));
+            ?>
+            <script type="text/javascript">
+            $('#submit-button').attr('value', '<?php echo $labels[login];?>');
+            </script>
+	<a id="link-forgot-passwd" class="need-help-reverse"
+		href="/users/resetPassword/index"> <?php echo $labels[forgetPassword]?>&#32;？ </a>
+		  <?php echo $this->form()->closeTag()?>
+		  <div id="loadingImg" class="mycenter" style="width: 20px;">
+		<img alt="loading" src="/images/loading.gif">
+	</div>
+</div>
+<p class="create-account">
+	<a id="link-signup" href="/users/register" id="link-signup">
+  		<?php echo $labels[createAccount]?>
+  		</a>
+</p>
+<!-- - - - - - - - - - - - - - - End Main - - - - - - - - - - - - - - -->
+<script src="/js/login.js" type="text/javascript"></script>
+

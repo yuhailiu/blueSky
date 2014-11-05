@@ -1,0 +1,25 @@
+<?php
+$this->headTitle()->prepend('Org Structure');
+require 'module/Users/view/users/utils/user_label.php';
+?>
+          
+		  <div class="tab-left" hidden="hidden">
+		      <?php echo $this->partial('users/org-manager/SPRtab-left.phtml');?>
+		  </div>
+		  <div class="tab-right" hidden="hidden">
+		      <?php echo $this->partial('users/org-manager/GOStab-right.phtml');?>
+		  </div>
+		  <br>
+		  <br>
+		  <br>
+		  <br>
+		  <div id="org_structure_loading_div" class="mycenter" hidden="hidden" style="width: 200px">
+            <img alt="" src="/images/loading.gif">
+          </div>
+          <div id="need_org_message_div" class="mycenter success" hidden="hidden">
+          <?php echo $user_labels['needCreateOrg']?>
+          <p><a href="/users/orgmanager" target="_blank"><?php echo $user_labels[createMyTeam]?></a></p>
+          </div>
+
+<script src="/js/bootstrap-paginator.min.js"></script>
+<script src="/js/orgStruct.js"></script>

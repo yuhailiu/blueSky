@@ -1,0 +1,36 @@
+<!-- - - - - - - - - - - - - Slider - - - - - - - - - - - - - - - -->
+<?php 
+//redirect to mobile page
+header("Location:/m/index.html"); 
+//make sure no other excute 
+exit;
+?>
+<?php require 'module/Users/view/users/utils/index_label.php';?>
+<div class="wrap">
+	<div class="slider">
+
+		<section id="slider">
+
+			<div class="flexslider">
+
+				<ul class="slides clearfix">
+
+					<li class="mainImg"><img src="images/slider/mainPage.jpg" alt="mainPage" class="mainImg" />
+						<hgroup class="caption-1">
+						    <h2><?php echo $labels[title3];?></h2>
+						</hgroup></li>
+
+				</ul>
+				<!--/ .slides-->
+
+			</div>
+			<!--/ .flexslider-->
+
+		</section>
+		<!--/ #slider-->
+	</div>
+	<!--/ .slider-->
+</div>
+<!--/ .wrap-->
+
+<!-- - - - - - - - - - - - - end Slider - - - - - - - - - - - - - - -->
