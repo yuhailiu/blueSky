@@ -155,19 +155,7 @@ class PushManagementController extends CommController
         // $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         
         if (! $fp) {
-<<<<<<< HEAD
-            print_r($fp);
-            throw new \Exception("Failed to connect");
-=======
             $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-            if (! $fp) {
-                throw new \Exception("Failed to connect");
-            } else {
-                return $fp;
-            }
->>>>>>> FETCH_HEAD
-        } else {
-            return $fp;
         }
     }
 
