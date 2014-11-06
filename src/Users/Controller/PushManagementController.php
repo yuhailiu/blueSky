@@ -140,21 +140,22 @@ class PushManagementController extends CommController
 
     protected function getFP()
     {
-        $passphrase = 'rdhaisheng';
+        $passphrase = 'rd123';
         $uploadPath = $this->getFileCertificationLocation();
         $ctx = stream_context_create();
         // $filename = $uploadPath . "/" . 'readyGoDevelop.pem';
         // $filename = $uploadPath . "/" . 'readyGoDistribution.pem';
         // $filename = $uploadPath . "/" . 'productpush.pem';
-        $filename = $uploadPath . "/" . 'pushCert.pem';
+        $filename = $uploadPath . "/" . 'productCertBlueSky.pem';
         stream_context_set_option($ctx, 'ssl', 'local_cert', $filename);
         stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
         
         // Open a connection to the APNS server
-        // $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT, $ctx);//| STREAM_CLIENT_PERSISTENT
-        $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        // $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         
         if (! $fp) {
+            print_r($fp);
             throw new \Exception("Failed to connect");
         } else {
             return $fp;
@@ -273,16 +274,20 @@ class PushManagementController extends CommController
                 $flag = "failedGetPushinfo";
             }
             // push info
+            $pushedInfos = array();
             if (count($pushInfos) > 0) {
                 // push android info
                 foreach ($pushInfos as $pushInfo) {
-                    $this->pushAndroidInfo($pushInfo);
+                    try {
+                        $this->pushAndroidInfo($pushInfo);
+                        array_push($pushedInfos, $pushInfo);
+                    } catch (\Exception $e) {}
                 }
                 try {
                     if (! $pushStackTable) {
                         $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
                     }
-                    $this->updatePushInfo($pushInfos, $pushStackTable);
+                    $this->updatePushInfo($pushedInfos, $pushStackTable);
                     $flag = "successfulUpdate";
                 } catch (\Exception $e) {
                     $flag = "failedUpdatePushInfos";

@@ -807,8 +807,10 @@ class WebServiceLoginController extends CommController
         
         $deviceToken = $_POST["deviceToken"] ? str_replace(" ", "", $_POST["deviceToken"]) : "";
         if (strlen($deviceToken) > 4) {
+            $version = $_POST["version"];
             try {
-                $flag = $this->updateUserDeviceToken($deviceToken);
+                //$flag = $this->updateUserDeviceToken($deviceToken);
+                $flag = $this->updateUserDeviceTokenAndVersion($deviceToken, $version);
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
@@ -836,6 +838,31 @@ class WebServiceLoginController extends CommController
         }
         
         $this->user->deviceToken = $deviceToken;
+        try {
+            $this->updateUser($this->user);
+            $flag = "successUpdateDeviceToken";
+        } catch (\Exception $e) {
+            $flag = "failedUpdateDeviceToken";
+        }
+        return $flag;
+    }
+    /**
+     * 
+     * @param unknown $deviceToken
+     * @throws \Exception
+     * @return string
+     */
+    protected function updateUserDeviceTokenAndVersion($deviceToken, $version)
+    {
+        // if has the deviceToken, delete it
+        try {
+            $this->clearDevicToken($deviceToken);
+        } catch (\Exception $e) {
+            throw new \Exception("failedClearDeviceToken");
+        }
+        
+        $this->user->deviceToken = $deviceToken;
+        $this->user->version = $version;
         try {
             $this->updateUser($this->user);
             $flag = "successUpdateDeviceToken";

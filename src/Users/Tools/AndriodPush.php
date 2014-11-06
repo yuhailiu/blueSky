@@ -34,10 +34,13 @@ class AndriodPush
                 "target" => $target,
                 "notificationNumber" => $pushStack->notificationNumber
             );
-            $notification = array(
+            $android = array(
                 "alert" => $pushStack->message,
                 "title" => "ReadyGo",
                 "extras" => $extras
+            );
+            $notification = array(
+                "android" => $android
             );
             // $body = array(
             // 'platform' => 'all',
@@ -52,6 +55,7 @@ class AndriodPush
                 ->setPlatform(M\all)
                 ->setAudience(M\audience(M\registration_id($registration_ids)))
                 ->setNotification($notification)
+//                 ->printJSON()
                 ->send();
 //             echo 'Push Success.' . $br;
 //             echo 'sendno : ' . $result->sendno . $br;

@@ -19,6 +19,7 @@ class User
     public $deviceCode;
     public $deviceToken;
     public $notificationNumber;
+    public $version;
     
 
     public function setPassword($clear_password)
@@ -46,6 +47,7 @@ class User
 		$this->deviceCode =  (isset($data['deviceCode'])) ? $data['deviceCode'] : null;
 		$this->deviceToken =  (isset($data['deviceToken'])) ? $data['deviceToken'] : null;
 		$this->notificationNumber =  (isset($data['notificationNumber'])) ? $data['notificationNumber'] : null;
+		$this->version =  (isset($data['version'])) ? $data['version'] : null;
 	}
 	
 	public function getArrayCopy()
