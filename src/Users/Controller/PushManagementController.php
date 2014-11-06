@@ -157,6 +157,7 @@ class PushManagementController extends CommController
         if (! $fp) {
             $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         }
+        return $fp;
     }
 
     protected function isSwithOn()
@@ -178,75 +179,88 @@ class PushManagementController extends CommController
         $flag = "startRepeatPush";
         $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
         $adapter = $this->getAdapter();
+        $i = 0;
         do {
             // get push info
             $pushedInfos = array();
             try {
-                if (! $pushStackTable) {
-                    $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
-                }
-                $pushInfos = $this->getApplePush($pushStackTable);
-            } catch (\Exception $e) {
-                $flag = "failedGetPushinfo";
-            }
-            // push info
-            $pushedInfos = array();
-            if (count($pushInfos) > 0) {
-                // open fp
-                $fp = $this->getFP();
                 
-                if (! $fp) {
-                    throw new \Exception("noFP");
-                }
-                foreach ($pushInfos as $pushInfo) {
-                    // get target by id
-                    if ($pushInfo->target_id > 10) {
-                        // get target by id
-                        try {
-                            // $target = $this->getTargetById($pushInfo->target_id);
-                            if (! $adapter) {
-                                $adapter = $this->getAdapter();
-                            }
-                            $target = MyUtils::getFullTargetById($pushInfo->target_id, $adapter);
-                        } catch (\Exception $e) {
-                            $target = null;
-                        }
-                        $body = $this->packPushInfoWithTarget($pushInfo, $target);
-                    } else {
-                        $body = $this->packPushInfoWithOutTarget($pushInfo);
-                    }
-                    $body[aps][badge] = (int) $body[aps][badge];
-                    // Encode the payload as JSON
-                    $payload = json_encode($body);
-                    if (strlen($pushInfo->deviceToken) > 10) {
-                        // Build the binary notification
-                        $msg = chr(0) . pack('n', 32) . pack('H*', $pushInfo->deviceToken) . pack('n', strlen($payload)) . $payload;
-                        
-                        // Send it to the server
-                        $result = fwrite($fp, $msg, strlen($msg));
-                        
-                        if (! $result) {
-                            // echo 'Message not delivered' . PHP_EOL;
-                            $flag = "messageNotDelivered";
-                        } else {
-                            // echo 'Message successfully delivered' . PHP_EOL;
-                            $flag = "messageSuccessfullyDelivered";
-                            array_push($pushedInfos, $pushInfo);
-                        }
-                    }
-                }
-                // close fp
-                fclose($fp);
-                // update pushStack
                 try {
                     if (! $pushStackTable) {
-                        print_r("pushStackTable" . $pushStackTable);
                         $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
                     }
-                    $this->updatePushInfo($pushedInfos, $pushStackTable);
-                    $flag = "successfulUpdate";
+                    $pushInfos = $this->getApplePush($pushStackTable);
                 } catch (\Exception $e) {
-                    $flag = "failedUpdatePushInfos";
+                    $flag = "failedGetPushinfo";
+                }
+                // push info
+                $pushedInfos = array();
+                if (count($pushInfos) > 0) {
+                    // open fp
+                    $fp = $this->getFP();
+                    
+                    // if (! $fp) {
+                    // throw new \Exception("noFP");
+                    // }
+                    foreach ($pushInfos as $pushInfo) {
+                        // get target by id
+                        if ($pushInfo->target_id > 10) {
+                            // get target by id
+                            try {
+                                // $target = $this->getTargetById($pushInfo->target_id);
+                                if (! $adapter) {
+                                    $adapter = $this->getAdapter();
+                                }
+                                $target = MyUtils::getFullTargetById($pushInfo->target_id, $adapter);
+                            } catch (\Exception $e) {
+                                $target = null;
+                            }
+                            $body = $this->packPushInfoWithTarget($pushInfo, $target);
+                        } else {
+                            $body = $this->packPushInfoWithOutTarget($pushInfo);
+                        }
+                        $body[aps][badge] = (int) $body[aps][badge];
+                        // Encode the payload as JSON
+                        $payload = json_encode($body);
+                        if (strlen($pushInfo->deviceToken) > 10) {
+                            // Build the binary notification
+                            $msg = chr(0) . pack('n', 32) . pack('H*', $pushInfo->deviceToken) . pack('n', strlen($payload)) . $payload;
+                            
+                            // Send it to the server
+                            $result = fwrite($fp, $msg, strlen($msg));
+                            
+                            if (! $result) {
+                                // echo 'Message not delivered' . PHP_EOL;
+                                $flag = "messageNotDelivered";
+                            } else {
+                                // echo 'Message successfully delivered' . PHP_EOL;
+                                $flag = "messageSuccessfullyDelivered";
+                                array_push($pushedInfos, $pushInfo);
+                            }
+                        }
+                    }
+                    // close fp
+                    if ($fp)
+                        fclose($fp);
+                        // update pushStack
+                    try {
+                        if (! $pushStackTable) {
+                            print_r("pushStackTable" . $pushStackTable);
+                            $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+                        }
+                        $this->updatePushInfo($pushedInfos, $pushStackTable);
+                        $flag = "successfulUpdate";
+                    } catch (\Exception $e) {
+                        $flag = "failedUpdatePushInfos";
+                    }
+                }
+            } catch (\Exception $e) {
+                $i ++;
+                if ($i > 10) {
+                    $i = 0;
+                    // send a text message to yuhai
+                    if($fp)fclose($fp);
+                    sleep(10);
                 }
             }
             sleep($interval);
@@ -271,20 +285,18 @@ class PushManagementController extends CommController
                 $flag = "failedGetPushinfo";
             }
             // push info
-            $pushedInfos = array();
             if (count($pushInfos) > 0) {
                 // push android info
                 foreach ($pushInfos as $pushInfo) {
                     try {
                         $this->pushAndroidInfo($pushInfo);
-                        array_push($pushedInfos, $pushInfo);
                     } catch (\Exception $e) {}
                 }
                 try {
                     if (! $pushStackTable) {
                         $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
                     }
-                    $this->updatePushInfo($pushedInfos, $pushStackTable);
+                    $this->updatePushInfo($pushInfos, $pushStackTable);
                     $flag = "successfulUpdate";
                 } catch (\Exception $e) {
                     $flag = "failedUpdatePushInfos";
@@ -293,7 +305,6 @@ class PushManagementController extends CommController
             // wait for a while
             sleep($interval);
         } while ($this->isSwithOn());
-        $flag = "finishPush";
         return $flag;
     }
 

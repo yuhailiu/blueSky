@@ -55,13 +55,15 @@ class AndriodPush
                 ->setPlatform(M\all)
                 ->setAudience(M\audience(M\registration_id($registration_ids)))
                 ->setNotification($notification)
-//                 ->printJSON()
                 ->send();
-//             echo 'Push Success.' . $br;
-//             echo 'sendno : ' . $result->sendno . $br;
-//             echo 'msg_id : ' . $result->msg_id . $br;
-//             echo 'Response JSON : ' . $result->json . $br;
+            // ->printJSON()
+            
+            // echo 'Push Success.' . $br;
+            // echo 'sendno : ' . $result->sendno . $br;
+            // echo 'msg_id : ' . $result->msg_id . $br;
+            // echo 'Response JSON : ' . $result->json . $br;
         } catch (APIRequestException $e) {
+            throw new \Exception($e);
             echo 'Push Fail.' . $br;
             echo 'Http Code : ' . $e->httpCode . $br;
             echo 'code : ' . $e->code . $br;
@@ -71,13 +73,14 @@ class AndriodPush
             echo 'rateLimitRemaining : ' . $e->rateLimitRemaining . $br;
             echo 'rateLimitReset : ' . $e->rateLimitReset . $br;
         } catch (APIConnectionException $e) {
+            throw new \Exception($e);
             echo 'Push Fail: ' . $br;
             echo 'Error Message: ' . $e->getMessage() . $br;
             // response timeout means your request has probably be received by JPUsh Server,please check that whether need to be pushed again.
             echo 'IsResponseTimeout: ' . $e->isResponseTimeout . $br;
         }
         
-//         echo $br . '-------------' . $br;
+        // echo $br . '-------------' . $br;
     }
 }
 
