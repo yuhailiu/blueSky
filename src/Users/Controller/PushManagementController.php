@@ -245,7 +245,6 @@ class PushManagementController extends CommController
                         // update pushStack
                     try {
                         if (! $pushStackTable) {
-                            print_r("pushStackTable" . $pushStackTable);
                             $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
                         }
                         $this->updatePushInfo($pushedInfos, $pushStackTable);
@@ -259,7 +258,8 @@ class PushManagementController extends CommController
                 if ($i > 10) {
                     $i = 0;
                     // send a text message to yuhai
-                    if($fp)fclose($fp);
+                    if ($fp)
+                        fclose($fp);
                     sleep(10);
                 }
             }
@@ -288,9 +288,13 @@ class PushManagementController extends CommController
             if (count($pushInfos) > 0) {
                 // push android info
                 foreach ($pushInfos as $pushInfo) {
+                    
                     try {
                         $this->pushAndroidInfo($pushInfo);
-                    } catch (\Exception $e) {}
+                    } catch (\Exception $e) {
+                        
+                        throw new \Exception($e);
+                    }
                 }
                 try {
                     if (! $pushStackTable) {
@@ -308,14 +312,6 @@ class PushManagementController extends CommController
         return $flag;
     }
 
-    public function testAndriodPushAction()
-    {
-        $flag = "andriod push";
-        $this->pushAndroidInfo();
-        return $this->returnJson(array(
-            "flag" => $flag
-        ));
-    }
 
     protected function pushAndroidInfo($pushStack)
     {
@@ -324,7 +320,6 @@ class PushManagementController extends CommController
             $target = MyUtils::getFullTargetById($pushStack->target_id, $adapter);
         }
         
-        // print_r($target);
         $andriodPush = new AndriodPush();
         $andriodPush->easyPush($target, $pushStack);
     }

@@ -1,7 +1,7 @@
 <?php
 namespace Users\Tools;
 
-require_once '../jPush/vendor/autoload.php';
+require_once 'jPush/vendor/autoload.php';
 
 use JPush\Model as M;
 use JPush\JPushClient;
@@ -42,13 +42,6 @@ class AndriodPush
             $notification = array(
                 "android" => $android
             );
-            // $body = array(
-            // 'platform' => 'all',
-            // 'audience' => 'all',
-            // 'notification' => $notification
-            // );
-            // $payload = json_encode($body);
-            // $result = $client->push()->send($payload);
             $registration_ids = array();
             array_push($registration_ids, $pushStack->deviceToken);
             $result = $client->push()
@@ -57,7 +50,6 @@ class AndriodPush
                 ->setNotification($notification)
                 ->send();
             // ->printJSON()
-            
             // echo 'Push Success.' . $br;
             // echo 'sendno : ' . $result->sendno . $br;
             // echo 'msg_id : ' . $result->msg_id . $br;
