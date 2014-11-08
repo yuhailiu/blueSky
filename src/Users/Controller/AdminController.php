@@ -29,7 +29,7 @@ class AdminController extends AbstractActionController
         return $this->adapter;
     }
 
-    public function indexAction()
+    protected function indexAction()
     {
         // authorized
         require 'module/Users/src/Users/Tools/AuthAdmin.php';
@@ -62,7 +62,7 @@ class AdminController extends AbstractActionController
         return $total->current();
     }
 
-    public function getUserByEmailAction()
+    protected function getUserByEmailAction()
     {
         // authorized
         require 'module/Users/src/Users/Tools/AuthAdmin.php';
@@ -101,7 +101,7 @@ class AdminController extends AbstractActionController
         return $rows->current();
     }
     
-    public function updateUserByEmailAction()
+    protected function updateUserByEmailAction()
     {
         // authorized
         require 'module/Users/src/Users/Tools/AuthAdmin.php';

@@ -15,15 +15,6 @@ class WebServiceLoginController extends CommController
 
     protected $user;
 
-    public function indexAction()
-    {
-        $result = array(
-            "flag" => "Hello",
-            "sessionCode" => "whatADay",
-            "result" => $result
-        );
-        return $this->returnJson($result);
-    }
 
     protected function getUserBySessionCode($sessionCode)
     {

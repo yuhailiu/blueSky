@@ -40,21 +40,6 @@ class MediaManagerController extends AbstractActionController
         }
     }
 
-    public function indexAction()
-    {
-        $uploadTable = $this->getServiceLocator()->get('ImageUploadTable');
-        $userTable = $this->getServiceLocator()->get('UserTable');
-        $userEmail = $this->getAuthService()
-            ->getStorage()
-            ->read();
-        $user = $userTable->getUserByEmail($userEmail);
-        
-        $viewModel = new ViewModel(array(
-            'myUploads' => $uploadTable->getUploadsByUserId($user->id)
-        ));
-        
-        return $viewModel;
-    }
 
     /**
      * change an array to Json and return response

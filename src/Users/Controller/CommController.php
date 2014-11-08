@@ -62,12 +62,14 @@ class CommController extends AbstractActionController
 
     public function indexAction()
     {
-        // authrize user
-        require 'module/Users/src/Users/Tools/AuthUser.php';
+        header("Location:/m/service.html");
+        exit();
+//         // authrize user
+//         require 'module/Users/src/Users/Tools/AuthUser.php';
         
-        return $this->returnJson(array(
-            'webpage' => 'commIndex'
-        ));
+//         return $this->returnJson(array(
+//             'webpage' => 'commIndex'
+//         ));
     }
 
     /**

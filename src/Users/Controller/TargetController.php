@@ -47,7 +47,7 @@ class TargetController extends AbstractActionController
         return $response;
     }
 
-    public function indexAction()
+    protected function indexAction()
     {
         // authrize user
         require 'module/Users/src/Users/Tools/AuthUser.php';

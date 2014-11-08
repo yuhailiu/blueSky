@@ -18,7 +18,7 @@ class WebServiceTargetController extends CommController
 
     protected $deviceTokens;
 
-    public function indexAction()
+    protected function indexAction()
     {
         MyUtils::inspector();
         MyUtils::inspector1();

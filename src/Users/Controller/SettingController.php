@@ -32,7 +32,7 @@ class SettingController extends AbstractActionController
     	return $this->adapter;
     }
 
-    public function indexAction()
+    protected  function indexAction()
     {
         // $this->layout('layout/myaccount');
         // check is it a league user, false return to login page

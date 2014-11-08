@@ -36,17 +36,6 @@ class LoginController extends AbstractActionController
         return $this->redirect()->toRoute('users/login');
     }
 
-    public function indexAction()
-    {
-        //clear the authservice
-        $this->getAuthService()->clearIdentity();
-        //get form return it.
-        $form = $this->getServiceLocator()->get('LoginForm');
-        $viewModel = new ViewModel(array(
-            'form' => $form
-        ));
-        return $viewModel;
-    }
 
     /**
      * fail login

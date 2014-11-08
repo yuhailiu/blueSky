@@ -12,7 +12,7 @@ class CheckNewestVersionController extends CommController
         $platForm = $_POST["platForm"];
         if (strlen($platForm) > 2) {
             if ($platForm == 'android') {
-                $version = "1.0.4";
+                $version = "1.1.0";
             }else{
                 $version = "no such platForm";
             }

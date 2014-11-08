@@ -12,15 +12,6 @@ class PushManagementController extends CommController
 
     protected $user;
 
-    public function indexAction()
-    {
-        $flag = "pushManagement";
-        
-        return $this->returnJson(array(
-            "flag" => $flag
-        ));
-    }
-
     protected function isAuthrizedUser($areaCode, $phoneNumber, $password)
     {
         $user = new User();

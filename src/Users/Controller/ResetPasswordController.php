@@ -293,7 +293,7 @@ class ResetPasswordController extends AbstractActionController
      *
      * @see ConfirmEmailForm and RandomPasswordForm
      */
-    public function indexAction()
+    protected  function indexAction()
     {
         $form = $this->getServiceLocator()->get('ConfirmEmailForm');
         $confirmCaptchaForm = $this->getServiceLocator()->get('ConfirmCaptchaForm');

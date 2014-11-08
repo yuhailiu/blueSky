@@ -2,7 +2,6 @@
 namespace Users\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
 use Users\Model\User;
 use Users\Tools\MyUtils;
 use Zend\Validator\EmailAddress;
@@ -10,14 +9,6 @@ use Zend\Json\Json;
 
 class RegisterController extends AbstractActionController
 {
-    public function indexAction()
-    {
-        $form = $this->getServiceLocator()->get('RegisterForm');
-        $viewModel = new ViewModel(array(
-            'form' => $form
-        ));
-        return $viewModel;
-    }
 
     protected function getAdapter()
     {
@@ -54,7 +45,7 @@ class RegisterController extends AbstractActionController
      *
      * @return response true or false
      */
-    public function processAction()
+    protected function processAction()
     {
         
         // is this post request
@@ -166,7 +157,7 @@ class RegisterController extends AbstractActionController
         $adapter->query($sql)->execute();
     }
 
-    public function checkEmailAction()
+    protected function checkEmailAction()
     {
         $email = $_GET['email'];
         

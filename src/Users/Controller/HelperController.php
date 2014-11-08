@@ -16,13 +16,6 @@ class HelperController extends AbstractActionController
 
     protected $adapter;
 
-    public function IndexAction()
-    {
-        $result = array(
-            "flag" => "HelperAction"
-        );
-        return $this->returnJson($result);
-    }
 
     protected function getAuthService()
     {

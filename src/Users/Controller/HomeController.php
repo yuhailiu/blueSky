@@ -2,7 +2,6 @@
 namespace Users\Controller;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\View\Model\ViewModel;
 
 class HomeController extends AbstractActionController
 {
@@ -29,14 +28,4 @@ class HomeController extends AbstractActionController
         return $this->adapter;
     }
 
-    public function indexAction()
-    {
-        // authorized
-        require 'module/Users/src/Users/Tools/AuthUser.php';
-        
-        $this->layout('layout/frame');
-        
-        $view = new ViewModel();
-        return $view;
-    }
 }

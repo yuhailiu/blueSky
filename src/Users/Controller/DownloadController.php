@@ -20,15 +20,6 @@ class DownloadController extends AbstractActionController
             return $this->returnFileResponse($file,$filesize);
         }
     }
-
-    public function IndexAction()
-    {
-        $result = array(
-            "flag" => "download"
-        );
-        return $this->returnJson($result);
-    }
-
     /**
      * put the file to reponse
      *

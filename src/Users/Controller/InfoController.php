@@ -7,12 +7,6 @@ use Zend\View\Model\ViewModel;
 class InfoController extends AbstractActionController
 {
 
-    public function indexAction()
-    {
-        $view = new ViewModel();
-        return $view;
-    }
-
     protected function aboutAction()
     {
         $view = new ViewModel();
