@@ -29,6 +29,8 @@ use Users\Model\TargetMembers;
 use Users\Model\TargetMembersTable;
 use Users\Model\PushStack;
 use Users\Model\PushStackTable;
+use Users\Model\CommentTable;
+use Users\Model\Comment;
 
 class Module implements AutoloaderProviderInterface
 {
@@ -103,6 +105,19 @@ class Module implements AutoloaderProviderInterface
                 // DB
                 
                 // tables
+                'CommentTable' => function ($sm)
+                {
+                    $tableGateway = $sm->get('CommentTableGateway');
+                    $table = new CommentTable($tableGateway);
+                    return $table;
+                },
+                'CommentTableGateway' => function ($sm)
+                {
+                    $dbAdapter = $sm->get('Zend\Db\Adapter\Adapter');
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new Comment());
+                    return new TableGateway('comment', $dbAdapter, null, $resultSetPrototype);
+                },
                 'PushStackTable' => function ($sm)
                 {
                     $tableGateway = $sm->get('PushStackTableGateway');

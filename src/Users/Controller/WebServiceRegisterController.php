@@ -9,7 +9,7 @@ class WebServiceRegisterController extends CommController
 
     protected $sessionCode;
 
-    protected function indexAction()
+    protected function index()
     {
         $result = array(
             'greeting' => 'hello world',

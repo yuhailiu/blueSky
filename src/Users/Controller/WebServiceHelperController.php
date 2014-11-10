@@ -9,7 +9,7 @@ class WebServiceHelperController extends CommController
 
     protected $user;
 
-    protected function indexAction()
+    protected function index()
     {
         MyUtils::inspector();
         MyUtils::inspector1();

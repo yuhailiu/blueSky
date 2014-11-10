@@ -15,7 +15,6 @@ class WebServiceLoginController extends CommController
 
     protected $user;
 
-
     protected function getUserBySessionCode($sessionCode)
     {
         $userTable = $this->getServiceLocator()->get('UserTable');
@@ -800,7 +799,7 @@ class WebServiceLoginController extends CommController
         if (strlen($deviceToken) > 4) {
             $version = $_POST["version"];
             try {
-                //$flag = $this->updateUserDeviceToken($deviceToken);
+                // $flag = $this->updateUserDeviceToken($deviceToken);
                 $flag = $this->updateUserDeviceTokenAndVersion($deviceToken, $version);
             } catch (\Exception $e) {
                 throw new \Exception($e);
@@ -837,9 +836,10 @@ class WebServiceLoginController extends CommController
         }
         return $flag;
     }
+
     /**
-     * 
-     * @param unknown $deviceToken
+     *
+     * @param unknown $deviceToken            
      * @throws \Exception
      * @return string
      */

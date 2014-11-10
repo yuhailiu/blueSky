@@ -14,7 +14,7 @@ class WebServiceTransactionController extends CommController
 
     protected $transaction;
 
-    protected function indexAction()
+    protected function index()
     {
         MyUtils::inspector();
         MyUtils::inspector1();

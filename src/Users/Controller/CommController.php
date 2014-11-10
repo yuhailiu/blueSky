@@ -64,12 +64,42 @@ class CommController extends AbstractActionController
     {
         header("Location:/m/service.html");
         exit();
-//         // authrize user
-//         require 'module/Users/src/Users/Tools/AuthUser.php';
+        // // authrize user
+        // require 'module/Users/src/Users/Tools/AuthUser.php';
         
-//         return $this->returnJson(array(
-//             'webpage' => 'commIndex'
-//         ));
+        // return $this->returnJson(array(
+        // 'webpage' => 'commIndex'
+        // ));
+    }
+
+    protected function isValidUserBySessionCode($phoneNumber, $sessionCode)
+    {
+        $user = $this->getUserByPhoneNumberOnly($phoneNumber);
+        if ($user->sessionCode == $sessionCode) {
+            $this->user = $user;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function getUserBySessionCode($sessionCode, $phoneNumber)
+    {
+        // check phoneNumber
+        $phoneNumber = MyUtils::clearNumber($phoneNumber);
+        if (MyUtils::isValidateTel($phoneNumber)) {
+            // check sessionCode
+            $sessionCode = str_replace(" ", "", $sessionCode);
+            if (strlen($sessionCode) > 10) {
+                if (!$this->isValidUserBySessionCode($phoneNumber, $sessionCode)) {
+                    throw new \Exception("invalidUser");
+                }
+            } else {
+                throw new \Exception("sessionCodeError");
+            }
+        } else {
+            throw new \Exception("phoneNumberError");
+        }
     }
 
     /**

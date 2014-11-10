@@ -18,7 +18,7 @@ class WebServiceTargetController extends CommController
 
     protected $deviceTokens;
 
-    protected function indexAction()
+    protected  function index()
     {
         MyUtils::inspector();
         MyUtils::inspector1();
@@ -621,7 +621,7 @@ class WebServiceTargetController extends CommController
         );
         return $this->returnJson($result);
     }
-
+    
     protected function getTargetsByCreaterWithPhoneNumber($target_status, $target_id)
     {
         $user = $this->user;
