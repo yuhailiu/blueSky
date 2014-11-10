@@ -25,7 +25,8 @@ class CommentTable
     {
         // prepare the data for update or insert
         $data = MyUtils::exchangeObjectToData($comment);
-        $this->tableGateway->insert($data);
+        $result = $this->tableGateway->insert($data);
+        return $result;
     }
     
     /**

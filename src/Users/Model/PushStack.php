@@ -11,6 +11,8 @@ class PushStack
     public $message;
 
     public $target_id;
+    
+    public $comment_id;
 
     public $status;
 
@@ -24,6 +26,7 @@ class PushStack
         $this->deviceToken = (isset($data['deviceToken'])) ? $data['deviceToken'] : null;
         $this->message = (isset($data['message'])) ? $data['message'] : null;
         $this->target_id = (isset($data['target_id'])) ? $data['target_id'] : null;
+        $this->comment_id = (isset($data['comment_id'])) ? $data['comment_id'] : null;
         $this->status = (isset($data['status'])) ? $data['status'] : null;
         $this->notificationNumber = (isset($data['notificationNumber'])) ? $data['notificationNumber'] : null;
         $this->userStatus = (isset($data['userStatus'])) ? $data['userStatus'] : null;

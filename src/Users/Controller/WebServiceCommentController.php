@@ -4,11 +4,15 @@ namespace Users\Controller;
 use Users\Controller\WebServiceTargetController;
 use Users\Model\Comment;
 use Users\Tools\MyUtils;
+use Users\Model\PushStack;
+use Users\Model\PushInfo;
 
 class WebServiceCommentController extends WebServiceTargetController
 {
 
     protected $createrId;
+
+    protected $comment;
 
     public function indexAction()
     {
@@ -59,17 +63,109 @@ class WebServiceCommentController extends WebServiceTargetController
         }
         $obj->target_id = $target_id;
         if ($target_id > 10) {
+            try {
+                $target = $this->getTargetById($target_id);
+                $this->target = $target;
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
             $obj->create_user = $user->id;
             $obj->create_time = $create_time;
-            $commentTable = $this->getServiceLocator()->get('CommentTable');
             try {
-                $commentTable->saveComment($obj);
+                $this->saveComment($obj);
             } catch (\Exception $e) {
                 throw new \Exception("failedCreateComment");
+            }
+            // save comment to pushStack
+            if (strlen($user->deviceToken) > 5) {
+                try {
+                    $this->saveCommentToPushStack();
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
             }
         } else {
             throw new \Exception("targetIdErro");
         }
+    }
+
+    protected function saveComment(Comment $comment)
+    {
+        $sql = "INSERT `comment` (`comment`, create_time, create_user, file_name, target_id)
+        VALUES('$comment->comment', '$comment->create_time', '$comment->create_user',
+        '$comment->file_name', '$comment->target_id')";
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+        $comment->id = $rows->getGeneratedValue();
+        $this->comment = $comment;
+    }
+
+    protected function saveCommentToPushStack()
+    {
+        $target = $this->target;
+        $comment = $this->comment;
+        $user = $this->user;
+        $pushInfo = new PushInfo();
+        $message = '您的目标：“' . $target->target_name . '” 的进度有一个更新：“' . $comment->comment . '”。';
+        $pushInfo->message = $message;
+        $pushInfo->comment_id = $comment->id;
+        if ($target->target_creater == $user->id) {
+            // if user is the target creater push it to all the helpers
+            try {
+                $this->saveCommentPushForCreater($pushInfo);
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
+        } else {
+            // if user is one of the helpers of target, push it to creater
+            try {
+                $this->saveComentPushForReceiver($pushInfo);
+            } catch (\Exception $e) {
+                throw new \Exception($e);
+            }
+        }
+    }
+
+    protected function saveCommentPushForCreater(PushInfo $pushInfo)
+    {
+        // get agree deviceTokens
+        $pushInfo->deviceTokens = $this->getAgreeHelperDeviceToken();
+        // save it by deviceToken
+        $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+        MyUtils::savePushInfo($pushInfo, $pushStackTable);
+    }
+
+    protected function saveComentPushForReceiver(PushInfo $pushInfo)
+    {
+        // get creater's deviceToken
+        $target = $this->target;
+        $id = (int)$target->target_creater;
+        $user = $this->getUserById($id);
+        $deviceToken = array(
+            "deviceToken" => $user->deviceToken,
+            "notificationNumber" => $user->notificationNumber,
+        );
+        $pushInfo->deviceTokens = array();
+        array_push($pushInfo->deviceTokens, $deviceToken);
+        // save it by deviceToken
+        $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+        MyUtils::savePushInfo($pushInfo, $pushStackTable);
+    }
+
+    protected function getAgreeHelperDeviceToken()
+    {
+        $target = $this->target;
+        // get deviceTokens
+        $sql = "SELECT deviceToken from targetMembers, users
+        where target_id = '$target->target_id' and member_status = 'agree'
+        and targetMembers.members_id = users.id";
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+        $array = array();
+        foreach ($rows as $row) {
+            array_push($array, $row);
+        }
+        return $array;
     }
 
     public function getCommentsAction()

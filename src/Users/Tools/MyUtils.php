@@ -67,6 +67,7 @@ class MyUtils
             $pushStack->notificationNumber = $deviceToken["notificationNumber"];
             $pushStack->status = "waiting";
             $pushStack->target_id = $pushInfo->target;
+            $pushStack->comment_id = $pushInfo->comment_id;
             $pushStack->userStatus = $pushInfo->userStatus;
             if (strlen($pushStack->deviceToken) > 5) {
                 $pushStackTable->savePushStack($pushStack);
