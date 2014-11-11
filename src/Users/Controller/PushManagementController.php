@@ -68,7 +68,7 @@ class PushManagementController extends CommController
             $platForm = $_POST["platForm"];
             
             if ($platForm == "apple") {
-                $flag = $this->repeatApplePushInfo($interval);
+                $flag = $this->repeatApplePushInfo1($interval);
             } elseif ($platForm == "andriod") {
                 // repeate andriod
                 $flag = $this->repeatAndriodPushInfo($interval);
@@ -260,6 +260,111 @@ class PushManagementController extends CommController
         return $flag;
     }
 
+    protected function repeatApplePushInfo1($interval)
+    {
+        $flag = "startRepeatPush";
+        $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+        $adapter = $this->getAdapter();
+        $i = 0;
+        do {
+            // get push info
+            $pushedInfos = array();
+            try {
+                
+                try {
+                    if (! $pushStackTable) {
+                        $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+                    }
+                    $pushInfos = $this->getApplePush($pushStackTable);
+                } catch (\Exception $e) {
+                    $flag = "failedGetPushinfo";
+                }
+                // push info
+                $pushedInfos = array();
+                if (count($pushInfos) > 0) {
+                    // open fp
+                    $fp = $this->getFP();
+                    
+                    // if (! $fp) {
+                    // throw new \Exception("noFP");
+                    // }
+                    foreach ($pushInfos as $pushInfo) {
+                        // get target by id
+                        if ($pushInfo->target_id > 10) {
+                            // get target by id
+                            try {
+                                // $target = $this->getTargetById($pushInfo->target_id);
+                                if (! $adapter) {
+                                    $adapter = $this->getAdapter();
+                                }
+                                $target = MyUtils::getFullTargetById($pushInfo->target_id, $adapter);
+                            } catch (\Exception $e) {
+                                $target = null;
+                            }
+                            $body = $this->packPushInfoWithTarget($pushInfo, $target);
+                        } else 
+                            if ($pushInfo->comment_id > 0) {
+                                // get comment by id
+                                try {
+                                    $comment = $this->getCommentById($pushInfo->comment_id);
+                                } catch (\Exception $e) {
+                                    throw new \Exception($e);
+                                }
+                                // package body with comment
+                                $body = $this->packPushInfoWithComment($pushInfo, $comment);
+                            } else {
+                                $body = $this->packPushInfoWithOutTarget($pushInfo);
+                            }
+                        $body[aps][badge] = (int) $body[aps][badge];
+                        // Encode the payload as JSON
+                        $payload = json_encode($body);
+                        if (strlen($pushInfo->deviceToken) > 10) {
+                            // Build the binary notification
+                            $msg = chr(0) . pack('n', 32) . pack('H*', $pushInfo->deviceToken) . pack('n', strlen($payload)) . $payload;
+                            
+                            // Send it to the server
+                            $result = fwrite($fp, $msg, strlen($msg));
+                            
+                            if (! $result) {
+                                // echo 'Message not delivered' . PHP_EOL;
+                                $flag = "messageNotDelivered";
+                            } else {
+                                // echo 'Message successfully delivered' . PHP_EOL;
+                                $flag = "messageSuccessfullyDelivered";
+                                array_push($pushedInfos, $pushInfo);
+                            }
+                        }
+                    }
+                    // close fp
+                    if ($fp)
+                        fclose($fp);
+                        // update pushStack
+                    try {
+                        if (! $pushStackTable) {
+                            $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
+                        }
+                        $this->updatePushInfo($pushedInfos, $pushStackTable);
+                        $flag = "successfulUpdate";
+                    } catch (\Exception $e) {
+                        $flag = "failedUpdatePushInfos";
+                    }
+                }
+            } catch (\Exception $e) {
+                $i ++;
+                if ($i > 10) {
+                    $i = 0;
+                    // send a text message to yuhai
+                    if ($fp)
+                        fclose($fp);
+                    sleep(10);
+                }
+            }
+            sleep($interval);
+        } while ($this->isSwithOn());
+        $flag = "finishPush";
+        return $flag;
+    }
+
     protected function repeatAndriodPushInfo($interval)
     {
         $flag = "startRepeatPush";
@@ -303,16 +408,21 @@ class PushManagementController extends CommController
         return $flag;
     }
 
-
     protected function pushAndroidInfo($pushStack)
     {
         if ($pushStack->target_id > 10) {
             $adapter = $this->getAdapter();
             $target = MyUtils::getFullTargetById($pushStack->target_id, $adapter);
+            $andriodPush = new AndriodPush();
+            $andriodPush->easyPush($target, $pushStack);
+        } elseif ($pushStack->comment_id > 0) {
+            $comment = $this->getCommentById($pushStack->comment_id);
+            $andriodPush = new AndriodPush();
+            $andriodPush->easyPushComment($comment, $pushStack);
+        } else {
+            $andriodPush = new AndriodPush();
+            $andriodPush->easyPush($target, $pushStack);
         }
-        
-        $andriodPush = new AndriodPush();
-        $andriodPush->easyPush($target, $pushStack);
     }
 
     /**
@@ -330,6 +440,21 @@ class PushManagementController extends CommController
             'badge' => $pushStack->notificationNumber,
             'category' => 'incomingCall',
             'target' => $target,
+            'userStatus' => $pushStack->userStatus
+        );
+        // print_r("badge =".$pushStack->notificationNumber);
+        return $body;
+    }
+
+    protected function packPushInfoWithComment(PushStack $pushStack, $comment)
+    {
+        // print_r("badge = ".$pushStack->message);
+        $body['aps'] = array(
+            'alert' => $pushStack->message,
+            'sound' => 'default',
+            'badge' => $pushStack->notificationNumber,
+            'category' => 'incomingCall',
+            'comment' => $comment,
             'userStatus' => $pushStack->userStatus
         );
         // print_r("badge =".$pushStack->notificationNumber);

@@ -868,6 +868,11 @@ class WebServiceTargetController extends CommController
         return $result;
     }
 
+    /**
+     * 
+     * @param unknown $target_id
+     * @param unknown $target_status
+     */
     protected function updateUserNotificationNumber($target_id, $target_status)
     {
         // get Target

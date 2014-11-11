@@ -5,6 +5,7 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Json\Json;
 use Users\Model\User;
 use Users\Tools\MyUtils;
+use Users\Model\Notification;
 // use Users\Exception\MyException;
 class CommController extends AbstractActionController
 {
@@ -30,11 +31,28 @@ class CommController extends AbstractActionController
         }
     }
 
+    protected function newUpdateUserNotificationNumber(Notification $notification)
+    {
+        $sql = "UPDATE users SET notificationNumber = '$notification->notificationNumber'
+            where id = '$notification->userId'";
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+    }
+
     protected function getUserByPhoneNumberOnly($phoneNumber)
     {
         $userTable = $this->getServiceLocator()->get('UserTable');
         $row = $userTable->getUserByPhoneNumberOnly($phoneNumber);
         return $row;
+    }
+
+    protected function getCommentById($id)
+    {
+        $sql = "SELECT `comment`.id , comment, `comment`.target_id, `comment`.create_time, users.phoneNumber as create_user from `comment` ,users
+            WHERE `comment`.id = '$id' and `comment`.create_user = users.id";
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+        return $rows->current();
     }
 
     protected function getAdapter()
@@ -64,12 +82,6 @@ class CommController extends AbstractActionController
     {
         header("Location:/m/service.html");
         exit();
-        // // authrize user
-        // require 'module/Users/src/Users/Tools/AuthUser.php';
-        
-        // return $this->returnJson(array(
-        // 'webpage' => 'commIndex'
-        // ));
     }
 
     protected function isValidUserBySessionCode($phoneNumber, $sessionCode)
@@ -91,7 +103,7 @@ class CommController extends AbstractActionController
             // check sessionCode
             $sessionCode = str_replace(" ", "", $sessionCode);
             if (strlen($sessionCode) > 10) {
-                if (!$this->isValidUserBySessionCode($phoneNumber, $sessionCode)) {
+                if (! $this->isValidUserBySessionCode($phoneNumber, $sessionCode)) {
                     throw new \Exception("invalidUser");
                 }
             } else {

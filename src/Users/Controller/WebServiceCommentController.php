@@ -4,8 +4,8 @@ namespace Users\Controller;
 use Users\Controller\WebServiceTargetController;
 use Users\Model\Comment;
 use Users\Tools\MyUtils;
-use Users\Model\PushStack;
 use Users\Model\PushInfo;
+use Users\Model\Notification;
 
 class WebServiceCommentController extends WebServiceTargetController
 {
@@ -77,12 +77,10 @@ class WebServiceCommentController extends WebServiceTargetController
                 throw new \Exception("failedCreateComment");
             }
             // save comment to pushStack
-            if (strlen($user->deviceToken) > 5) {
-                try {
-                    $this->saveCommentToPushStack();
-                } catch (\Exception $e) {
-                    throw new \Exception($e);
-                }
+            try {
+                $this->saveCommentToPushStack();
+            } catch (\Exception $e) {
+                throw new \Exception($e);
             }
         } else {
             throw new \Exception("targetIdErro");
@@ -106,7 +104,7 @@ class WebServiceCommentController extends WebServiceTargetController
         $comment = $this->comment;
         $user = $this->user;
         $pushInfo = new PushInfo();
-        $message = '您的目标：“' . $target->target_name . '” 的进度有一个更新：“' . $comment->comment . '”。';
+        $message = '您的目标“' . $target->target_name . '” 有一个进度更新“' . $comment->comment . '”。';
         $pushInfo->message = $message;
         $pushInfo->comment_id = $comment->id;
         if ($target->target_creater == $user->id) {
@@ -128,8 +126,18 @@ class WebServiceCommentController extends WebServiceTargetController
 
     protected function saveCommentPushForCreater(PushInfo $pushInfo)
     {
+        // get addedMembers
+        $addedMembers = $this->getAddedMembers();
         // get agree deviceTokens
-        $pushInfo->deviceTokens = $this->getAgreeHelperDeviceToken();
+        $deviceTokens = array();
+        foreach ($addedMembers as $member) {
+            $deviceToken = array(
+                "deviceToken" => $member["deviceToken"],
+                "notificationNumber" => $member["notificationNumber"]
+            );
+            array_push($deviceTokens, $deviceToken);
+        }
+        $pushInfo->deviceTokens = $deviceTokens;
         // save it by deviceToken
         $pushStackTable = $this->getServiceLocator()->get('PushStackTable');
         MyUtils::savePushInfo($pushInfo, $pushStackTable);
@@ -139,11 +147,16 @@ class WebServiceCommentController extends WebServiceTargetController
     {
         // get creater's deviceToken
         $target = $this->target;
-        $id = (int)$target->target_creater;
+        $id = (int) $target->target_creater;
         $user = $this->getUserById($id);
+        $user->notificationNumber ++;
+        $notification = new Notification();
+        $notification->notificationNumber = $user->notificationNumber;
+        $notification->userId = $user->id;
+        $this->newUpdateUserNotificationNumber($notification);
         $deviceToken = array(
             "deviceToken" => $user->deviceToken,
-            "notificationNumber" => $user->notificationNumber,
+            "notificationNumber" => $user->notificationNumber
         );
         $pushInfo->deviceTokens = array();
         array_push($pushInfo->deviceTokens, $deviceToken);
@@ -152,13 +165,49 @@ class WebServiceCommentController extends WebServiceTargetController
         MyUtils::savePushInfo($pushInfo, $pushStackTable);
     }
 
-    protected function getAgreeHelperDeviceToken()
+    protected function getAddedMembers()
+    {
+        // get agree members id
+        $agreeMembers = $this->getAgreeMembersByTargetId();
+        // add 1 at every notificationNumber
+        $addedMembers = $this->addOneOnNotificationNumber($agreeMembers);
+        // update user table with members
+        $this->updateMembersNotificationNumber($addedMembers);
+        
+        return $addedMembers;
+    }
+
+    protected function updateMembersNotificationNumber($members)
+    {
+        foreach ($members as $member) {
+            $notification = new Notification();
+            $notification->notificationNumber = $member["notificationNumber"];
+            $notification->userId = $member["id"];
+            $this->newUpdateUserNotificationNumber($notification);
+        }
+    }
+
+    protected function addOneOnNotificationNumber($members)
+    {
+        $addedMembers = array();
+        foreach ($members as $member) {
+            if (strlen($member["deviceToken"]) > 5) {
+                $deviceToken = array();
+                $deviceToken["id"] = $member["id"];
+                $deviceToken["deviceToken"] = $member["deviceToken"];
+                $deviceToken["notificationNumber"] = $member["notificationNumber"] + 1;
+                array_push($addedMembers, $deviceToken);
+            }
+        }
+        return $addedMembers;
+    }
+
+    protected function getAgreeMembersByTargetId()
     {
         $target = $this->target;
-        // get deviceTokens
-        $sql = "SELECT deviceToken from targetMembers, users
-        where target_id = '$target->target_id' and member_status = 'agree'
-        and targetMembers.members_id = users.id";
+        $sql = "SELECT deviceToken, notificationNumber, users.id from targetMembers, users
+            where target_id = '$target->target_id' and member_status = 'agree'
+            and users.id = members_id";
         $adapter = $this->getAdapter();
         $rows = $adapter->query($sql)->execute();
         $array = array();

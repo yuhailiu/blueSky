@@ -87,7 +87,7 @@ class CommentTable
      * @throws \Exception
      * @return Ambigous <multitype:, ArrayObject, NULL, \ArrayObject, \Zend\Db\ResultSet\mixed, unknown>
      */
-    public function getUserById($id)
+    public function getCommentById($id)
     {
         $rowset = $this->tableGateway->select(array(
             'id' => $id
