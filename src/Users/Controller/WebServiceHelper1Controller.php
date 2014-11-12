@@ -90,16 +90,117 @@ class WebServiceHelper1Controller extends WebServiceHelperController
 
     public function startCompareAddressBookPhoneNumberAction()
     {
-        $this->compareAddressBookPhoneNumber();
-        // return successUpload
+        // verify user
+        require 'module/Users/src/Users/Tools/WebServiceAuthUser.php';
+        if ($flag != "validUser") {
+            return $this->returnJson(array(
+                "flag" => $flag
+            ));
+        }
+        $user = $this->user;
+        if ($user->phoneNumber == '1974071900') {
+            // turn on switch
+            $action = $_POST["action"];
+            if ($action == "matchAddress") {
+                try {
+                    $this->switchOn($action);
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
+                // start push
+                ignore_user_abort(); // 关掉浏览器，PHP脚本也可以继续执行.
+                set_time_limit(0); // 通过set_time_limit(0)可以让程序无限制的执行下去
+                $interval = 1; // 每隔1s运行
+                try {
+                    $this->repeateMatchAddress($interval);
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
+                $flag = "finish match service";
+            } else {
+                $flag = "what are you going to do?";
+            }
+        } else {
+            $flag = "you are kiding";
+        }
+        
+        // return finish match service
         date_default_timezone_set('UTC');
         return $this->returnJson(array(
-            "flag" => "successCompareAddressBook",
+            "flag" => $flag,
             "currentTime" => mktime()
         ));
     }
-    
-    
+
+    public function stopCompareAddressBookPhoneNumberAction()
+    {
+        // verify user
+        require 'module/Users/src/Users/Tools/WebServiceAuthUser.php';
+        if ($flag != "validUser") {
+            return $this->returnJson(array(
+                "flag" => $flag
+            ));
+        }
+        $user = $this->user;
+        if ($user->phoneNumber == '1974071900') {
+            // turn off switch
+            $action = $_POST["action"];
+            if ($action == "matchAddress") {
+                try {
+                    $this->switchOff($action);
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
+                $flag = "switch match service off";
+            } else {
+                $flag = "what are you going to do?";
+            }
+        } else {
+            $flag = "you are kiding";
+        }
+        // return finish match service
+        date_default_timezone_set('UTC');
+        return $this->returnJson(array(
+            "flag" => $flag,
+            "currentTime" => mktime()
+        ));
+    }
+
+    protected function switchOn($action)
+    {
+        $adapter = $this->getAdapter();
+        MyUtils::start($action, $adapter, $this->user);
+    }
+
+    protected function switchOff($action)
+    {
+        $adapter = $this->getAdapter();
+        MyUtils::stop($action, $adapter, $this->user);
+    }
+
+    protected function repeateMatchAddress($interval)
+    {
+        do {
+            $this->compareAddressBookPhoneNumber();
+            sleep($interval);
+        } while ($this->isMatchSwithOn());
+    }
+
+    protected function isMatchSwithOn()
+    {
+        $adapter = $this->getAdapter();
+        $sql = "SELECT * FROM switch
+            where id IN(SELECT MAX(id) FROM switch)
+            and action = 'matchAddress'";
+        $rows = $adapter->query($sql)->execute();
+        $switch = $rows->current()["switch"];
+        if ($switch == 'on') {
+            $flag = true;
+        } else {
+            $flag = false;
+        }
+        return $flag;
+    }
 
     protected function compareAddressBookPhoneNumber()
     {

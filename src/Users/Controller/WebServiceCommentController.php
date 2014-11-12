@@ -39,6 +39,7 @@ class WebServiceCommentController extends WebServiceTargetController
         $target_id = $_POST["target_id"];
         
         try {
+            date_default_timezone_set('PRC');
             $create_time = mktime();
             $this->createComment($comment, $target_id, $create_time);
         } catch (\Exception $e) {
@@ -49,7 +50,8 @@ class WebServiceCommentController extends WebServiceTargetController
         }
         return $this->returnJson(array(
             "flag" => "successCreateComment",
-            "create_time" => $create_time
+            "create_time" => $create_time,
+            "comment_id" => $this->comment->id,
         ));
     }
 
@@ -257,18 +259,18 @@ class WebServiceCommentController extends WebServiceTargetController
             // get comments by target receiver
             $comments = $this->getCommentsByTargetReceiver($target_id, $lastGetTime);
         }
-        $array = array();
-        foreach ($comments as $comment) {
-            $temp = array();
-            $temp['file_name'] = $comment['file_name'];
-            $temp['chat_comment'] = $comment['comment'];
-            $temp['target_id'] = $comment['target_id'];
-            $temp['create_time'] = $comment['create_time'];
-            $temp['create_user'] = $comment['create_user'];
-            array_push($array, $temp);
-        }
-        return $array;
-        // return $comments;
+//         $array = array();
+//         foreach ($comments as $comment) {
+//             $temp = array();
+//             $temp['file_name'] = $comment['file_name'];
+//             $temp['chat_comment'] = $comment['comment'];
+//             $temp['target_id'] = $comment['target_id'];
+//             $temp['create_time'] = $comment['create_time'];
+//             $temp['create_user'] = $comment['create_user'];
+//             array_push($array, $temp);
+//         }
+//         return $array;
+        return $comments;
     }
 
     protected function isCreaterOfTarget($target_id)
@@ -286,12 +288,12 @@ class WebServiceCommentController extends WebServiceTargetController
     protected function getCommentsByTargetCreater($target_id, $lastGetTime)
     {
         if (strlen($lastGetTime) > 5) {
-            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.id, comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' and create_time > '$lastGetTime'
             and `comment`.create_user = users.id
             ORDER BY create_time DESC";
         } else {
-            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.id, comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' 
             and comment.create_user = users.id
             ORDER BY create_time DESC";
@@ -311,13 +313,13 @@ class WebServiceCommentController extends WebServiceTargetController
     {
         $user = $this->user;
         if (strlen($lastGetTime) > 5) {
-            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.id, comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' and create_time > $lastGetTime
             and (create_user = '$user->id' or create_user = '$this->createrId')
             and `comment`.create_user = users.id
             ORDER BY create_time DESC";
         } else {
-            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.id, comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' 
             and (create_user = '$user->id' or create_user = '$this->createrId')
             and `comment`.create_user = users.id
