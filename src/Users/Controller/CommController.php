@@ -55,6 +55,23 @@ class CommController extends AbstractActionController
         return $rows->current();
     }
 
+    /**
+     * get user object
+     * 
+     * @param string $id
+     * @return User
+     */
+    protected function getUserById($id)
+    {
+        $sql = "SELECT * from users where id = '$id'";
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+        $data = $rows->current();
+        $object = new User();
+        $user = MyUtils::exchangeDataToObject($data, $object);
+        return $user;
+    }
+
     protected function getAdapter()
     {
         if (! $this->adapter) {

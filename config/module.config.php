@@ -21,7 +21,7 @@ return array(
             'Users\Controller\CheckNewestVersion' => 'Users\Controller\CheckNewestVersionController',
             'Users\Controller\Comment' => 'Users\Controller\WebServiceCommentController',
             
-            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceCommentController'
+            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceHelper1Controller'
         )
     ),
     'router' => array(
@@ -44,7 +44,7 @@ return array(
                     )
                 )
             ), // end TestNewController
-            // set routes
+               // set routes
             'comment' => array(
                 'type' => 'Segment',
                 'options' => array(

@@ -56,8 +56,9 @@ class PushManagementController extends CommController
         $user = $this->user;
         if ($user->phoneNumber == '1974071900') {
             // turn on switch
+            $platForm = $_POST["platForm"];
             try {
-                $this->start();
+                $this->start($platForm);
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
@@ -65,7 +66,6 @@ class PushManagementController extends CommController
             ignore_user_abort(); // 关掉浏览器，PHP脚本也可以继续执行.
             set_time_limit(0); // 通过set_time_limit(0)可以让程序无限制的执行下去
             $interval = 1; // 每隔1s运行
-            $platForm = $_POST["platForm"];
             
             if ($platForm == "apple") {
                 $flag = $this->repeatApplePushInfo1($interval);
@@ -95,12 +95,13 @@ class PushManagementController extends CommController
         }
         $user = $this->user;
         if ($user->phoneNumber == '1974071900') {
+            $platForm = $_POST["platForm"];
             try {
-                $this->stop();
-                $flag = "stopPushService";
+                $this->stop($platForm);
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
+            $flag = "stopPushService";
         } else {
             $flag = "you are kiding";
         }
@@ -111,39 +112,36 @@ class PushManagementController extends CommController
         ));
     }
 
-    protected function stop()
+    protected function stop($action)
     {
         $user = $this->user;
         // set swith table to off
-        $sql = "INSERT INTO switch (switch, user_id) VALUES ('off', '$user->id')";
         $adapter = $this->getAdapter();
-        $row = $adapter->query($sql)->execute();
+        MyUtils::stop($action, $adapter, $user);
     }
 
-    protected function start()
+    protected function start($action)
     {
         $user = $this->user;
         // set swith table to off
-        $sql = "INSERT INTO switch (switch, user_id) VALUES ('on', '$user->id')";
         $adapter = $this->getAdapter();
-        $row = $adapter->query($sql)->execute();
+        MyUtils::start($action, $adapter, $user);
     }
 
     protected function getFP()
     {
-        $passphrase = 'rd123';
+        // $passphrase = 'rd123';
+        $passphrase = 'rdhaisheng';
         $uploadPath = $this->getFileCertificationLocation();
         $ctx = stream_context_create();
-        // $filename = $uploadPath . "/" . 'readyGoDevelop.pem';
-        // $filename = $uploadPath . "/" . 'readyGoDistribution.pem';
-        // $filename = $uploadPath . "/" . 'productpush.pem';
-        $filename = $uploadPath . "/" . 'productCertBlueSky.pem';
+        $filename = $uploadPath . "/" . 'pushCert.pem';
+        // $filename = $uploadPath . "/" . 'productCertBlueSky.pem';//production
         stream_context_set_option($ctx, 'ssl', 'local_cert', $filename);
         stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
         
         // Open a connection to the APNS server
-        $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
-        // $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        // $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         
         if (! $fp) {
             $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
@@ -155,6 +153,38 @@ class PushManagementController extends CommController
     {
         $adapter = $this->getAdapter();
         $sql = "SELECT * FROM switch where id IN(SELECT MAX(id) FROM switch)";
+        $rows = $adapter->query($sql)->execute();
+        $switch = $rows->current()["switch"];
+        if ($switch == 'on') {
+            $flag = true;
+        } else {
+            $flag = false;
+        }
+        return $flag;
+    }
+
+    protected function isAndriodSwithOn()
+    {
+        $adapter = $this->getAdapter();
+        $sql = "SELECT * FROM switch 
+            where id IN(SELECT MAX(id) FROM switch)
+            and action = 'andriod'";
+        $rows = $adapter->query($sql)->execute();
+        $switch = $rows->current()["switch"];
+        if ($switch == 'on') {
+            $flag = true;
+        } else {
+            $flag = false;
+        }
+        return $flag;
+    }
+
+    protected function isAppleSwithOn()
+    {
+        $adapter = $this->getAdapter();
+        $sql = "SELECT * FROM switch 
+            where id IN(SELECT MAX(id) FROM switch)
+            and action = 'apple'";
         $rows = $adapter->query($sql)->execute();
         $switch = $rows->current()["switch"];
         if ($switch == 'on') {

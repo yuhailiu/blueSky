@@ -237,6 +237,7 @@ class WebServiceCommentController extends WebServiceTargetController
             $comments = $this->getCommentsByTargetId($target_id, $lastGetTime);
         } catch (\Exception $e) {
             throw new \Exception($e);
+            $flag = "failedGetComments";
         }
         return $this->returnJson(array(
             "flag" => "successGetComments",
@@ -256,7 +257,18 @@ class WebServiceCommentController extends WebServiceTargetController
             // get comments by target receiver
             $comments = $this->getCommentsByTargetReceiver($target_id, $lastGetTime);
         }
-        return $comments;
+        $array = array();
+        foreach ($comments as $comment) {
+            $temp = array();
+            $temp['file_name'] = $comment['file_name'];
+            $temp['chat_comment'] = $comment['comment'];
+            $temp['target_id'] = $comment['target_id'];
+            $temp['create_time'] = $comment['create_time'];
+            $temp['create_user'] = $comment['create_user'];
+            array_push($array, $temp);
+        }
+        return $array;
+        // return $comments;
     }
 
     protected function isCreaterOfTarget($target_id)
@@ -274,14 +286,14 @@ class WebServiceCommentController extends WebServiceTargetController
     protected function getCommentsByTargetCreater($target_id, $lastGetTime)
     {
         if (strlen($lastGetTime) > 5) {
-            $sql = "SELECT `comment`, fileName, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' and create_time > '$lastGetTime'
             and `comment`.create_user = users.id
             ORDER BY create_time DESC";
         } else {
-            $sql = "SELECT `comment`, fileName, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' 
-            and `comment`.create_user = users.id
+            and comment.create_user = users.id
             ORDER BY create_time DESC";
         }
         
@@ -299,13 +311,13 @@ class WebServiceCommentController extends WebServiceTargetController
     {
         $user = $this->user;
         if (strlen($lastGetTime) > 5) {
-            $sql = "SELECT `comment`, fileName, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' and create_time > $lastGetTime
             and (create_user = '$user->id' or create_user = '$this->createrId')
             and `comment`.create_user = users.id
             ORDER BY create_time DESC";
         } else {
-            $sql = "SELECT `comment`, fileName, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
+            $sql = "SELECT comment.comment, target_id, create_time, users.phoneNumber as create_user from `comment` ,users
             where target_id = '$target_id' 
             and (create_user = '$user->id' or create_user = '$this->createrId')
             and `comment`.create_user = users.id

@@ -413,13 +413,13 @@ class MyUtils
         
         // Put your alert message here:
         $ctx = stream_context_create();
-        //$filename = $pushInfo->uploadPath . "/" . 'readyGoDevelop.pem';
+        // $filename = $pushInfo->uploadPath . "/" . 'readyGoDevelop.pem';
         $filename = $pushInfo->uploadPath . "/" . 'productpush.pem';
         stream_context_set_option($ctx, 'ssl', 'local_cert', $filename);
         stream_context_set_option($ctx, 'ssl', 'passphrase', $passphrase);
         
         // Open a connection to the APNS server
-//         $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
+        // $fp = stream_socket_client('ssl://gateway.sandbox.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         $fp = stream_socket_client('ssl://gateway.push.apple.com:2195', $err, $errstr, 60, STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT, $ctx);
         // print_r("fp = ".$fp);
         if (! $fp) {
@@ -432,12 +432,12 @@ class MyUtils
                 'sound' => 'default',
                 'badge' => $deviceTokenWithNumber['notificationNumber'],
                 'category' => 'incomingCall',
-                //'target' => $pushInfo->target,
+                // 'target' => $pushInfo->target,
                 'userStatus' => $pushInfo->userStatus
             );
             // Encode the payload as JSON
             $payload = json_encode($body);
-//             print_r("payload from old".$payload);
+            // print_r("payload from old".$payload);
             // Build the binary notification
             $msg = chr(0) . pack('n', 32) . pack('H*', $deviceTokenWithNumber['deviceToken']) . pack('n', strlen($payload)) . $payload;
             
@@ -457,6 +457,20 @@ class MyUtils
         // Close the connection to the server
         fclose($fp);
         return $flag;
+    }
+
+    public static function stop($action, $adapter, $user)
+    {
+        // set swith table to off
+        $sql = "INSERT INTO switch (switch, user_id, action) VALUES ('off', '$user->id','$action')";
+        $row = $adapter->query($sql)->execute();
+    }
+
+    public static function start($action, $adapter, $user)
+    {
+        // set swith table to off
+        $sql = "INSERT INTO switch (switch, user_id, action) VALUES ('on', '$user->id', '$action')";
+        $row = $adapter->query($sql)->execute();
     }
 }
 
