@@ -65,6 +65,72 @@ class WebServiceTarget1Controller extends WebServiceTargetController
         }
         return $targets;
     }
+
+    public function deleteHelpersFromTargetAction()
+    {
+        MyUtils::inspector();
+        MyUtils::inspector1();
+        $sessionCode = $_POST["sessionCode"];
+        $phoneNumber = $_POST["phoneNumber"];
+        try {
+            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+        } catch (\Exception $e) {
+            $flag = "invalidUser";
+            return $this->returnJson(array(
+                "flag" => $flag
+            ));
+        }
+        $target_id = $_POST["target_id"];
+        $members = $_POST["members"];
+        
+        try {
+            $this->deleteMembersFromTarget($target_id, $members);
+            $flag = "successDeleteHelpers";
+        } catch (\Exception $e) {
+            $flag = "failedDeleteMembers";
+//             throw new \Exception($e);
+        }
+        
+        return $this->returnJson(array(
+            "flag" => $flag
+        ));
+    }
+
+    protected function deleteMembersFromTarget($target_id, $members)
+    {
+        if (strlen($members) < 5) {
+            throw new \Exception("noMembers");
+        }
+        if ($target_id < 1) {
+            throw new \Exception("noTargetId");
+        }
+        $user = $this->user;
+        // does the user has right
+        if ($this->isUserOfTargetCreater($target_id, $user->id)) {
+            // get and parse helper phoneNumbers
+            $members = $this->parseAddressBookPhoneNumber($members);
+            // delete the helpers
+            foreach ($members as $memberPhoneNumber) {
+                try {
+                    $this->deleteMemberFromTarget($target_id, $memberPhoneNumber);
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
+            }
+        } else {
+            throw new \Exception("noPermition");
+        }
+    }
+
+    protected function deleteMemberFromTarget($target_id, $memberPhoneNumber)
+    {
+        // delete if it's not an agreed member
+        $adapter = $this->getAdapter();
+        $sql = "DELETE from targetMembers
+    	       where targetMembers.target_id = '$target_id' and member_status <> 'agree' and targetMembers.members_id =
+    	       (SELECT id from users where phoneNumber = '$memberPhoneNumber')";
+        $adapter->query($sql)->execute();
+    }
 }
 
 ?>

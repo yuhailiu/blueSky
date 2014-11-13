@@ -51,7 +51,7 @@ class WebServiceCommentController extends WebServiceTargetController
         return $this->returnJson(array(
             "flag" => "successCreateComment",
             "create_time" => $create_time,
-            "comment_id" => $this->comment->id,
+            "comment_id" => $this->comment->id
         ));
     }
 
@@ -259,17 +259,17 @@ class WebServiceCommentController extends WebServiceTargetController
             // get comments by target receiver
             $comments = $this->getCommentsByTargetReceiver($target_id, $lastGetTime);
         }
-//         $array = array();
-//         foreach ($comments as $comment) {
-//             $temp = array();
-//             $temp['file_name'] = $comment['file_name'];
-//             $temp['chat_comment'] = $comment['comment'];
-//             $temp['target_id'] = $comment['target_id'];
-//             $temp['create_time'] = $comment['create_time'];
-//             $temp['create_user'] = $comment['create_user'];
-//             array_push($array, $temp);
-//         }
-//         return $array;
+        // $array = array();
+        // foreach ($comments as $comment) {
+        // $temp = array();
+        // $temp['file_name'] = $comment['file_name'];
+        // $temp['chat_comment'] = $comment['comment'];
+        // $temp['target_id'] = $comment['target_id'];
+        // $temp['create_time'] = $comment['create_time'];
+        // $temp['create_user'] = $comment['create_user'];
+        // array_push($array, $temp);
+        // }
+        // return $array;
         return $comments;
     }
 

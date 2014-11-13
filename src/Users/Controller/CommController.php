@@ -45,7 +45,7 @@ class CommController extends AbstractActionController
             $userTable = $this->getServiceLocator()->get('UserTable');
             $row = $userTable->getUserByPhoneNumberOnly($phoneNumber);
             return $row;
-        }else {
+        } else {
             throw new \Exception("phoneNumberError");
         }
     }
@@ -61,8 +61,8 @@ class CommController extends AbstractActionController
 
     /**
      * get user object
-     * 
-     * @param string $id
+     *
+     * @param string $id            
      * @return User
      */
     protected function getUserById($id)
@@ -159,5 +159,15 @@ class CommController extends AbstractActionController
         } else {
             throw new \Exception("invalidPassword");
         }
+    }
+
+    protected function parseAddressBookPhoneNumber($addressBookPhoneNumber)
+    {
+        if (strlen($addressBookPhoneNumber) > 5) {
+            $members = MyUtils::changeStringtoArray($addressBookPhoneNumber);
+        } else {
+            throw new \Exception("addressBookPhoneNumberError");
+        }
+        return $members;
     }
 }

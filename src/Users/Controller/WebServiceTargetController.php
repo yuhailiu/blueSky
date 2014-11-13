@@ -94,9 +94,12 @@ class WebServiceTargetController extends CommController
         $adapter = $this->getAdapter();
         
         $row = $adapter->query($sql)->execute();
-        $row = $row->current();
+        $data = $row->current();
         $target = new Target();
-        $target = MyUtils::exchangeDataToObject($row, $target);
+        foreach ($target as $key => $value) {
+            $target->$key = (isset($data[$key])) ? $data[$key] : null;
+        }
+        // $target = MyUtils::exchangeDataToObject($row, $target);
         return $target;
     }
 
@@ -448,36 +451,6 @@ class WebServiceTargetController extends CommController
         } else {
             return false;
         }
-    }
-
-    public function deleteHelpersFromTargetAction()
-    {
-        MyUtils::inspector();
-        MyUtils::inspector1();
-        $sessionCode = $_POST["sessionCode"];
-        $phoneNumber = $_POST["phoneNumber"];
-        try {
-            $this->getUserBySessionCode($sessionCode, $phoneNumber);
-        } catch (\Exception $e) {
-            $flag = "invalidUser";
-            return $this->returnJson(array(
-                "flag" => $flag
-            ));
-        }
-        $target_id = $_POST["target_id"];
-        $members = $_POST["members"];
-        //does the user has right
-        //get and parse helper phoneNumbers
-        //delete the helpers if it's not a agreed helper
-        
-        return $this->returnJson(array(
-            "flag" => "successDeleteHelpers"
-        ));
-    }
-    
-    protected function deleteMembersFromTarget()
-    {
-        
     }
 
     public function deleteTargetAction()

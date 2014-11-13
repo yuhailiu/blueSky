@@ -65,15 +65,15 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         ));
     }
 
-    protected function parseAddressBookPhoneNumber($addressBookPhoneNumber)
-    {
-        if (strlen($addressBookPhoneNumber) > 5) {
-            $members = MyUtils::changeStringtoArray($addressBookPhoneNumber);
-        } else {
-            throw new \Exception("addressBookPhoneNumberError");
-        }
-        return $members;
-    }
+//     protected function parseAddressBookPhoneNumber($addressBookPhoneNumber)
+//     {
+//         if (strlen($addressBookPhoneNumber) > 5) {
+//             $members = MyUtils::changeStringtoArray($addressBookPhoneNumber);
+//         } else {
+//             throw new \Exception("addressBookPhoneNumberError");
+//         }
+//         return $members;
+//     }
 
     protected function saveMembers($members)
     {
@@ -262,7 +262,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             if ($helper->id > 10) {
                 // build as readygo user
                 try {
-                    $this->buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber,$create_time);
+                    $this->buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber, $create_time);
                 } catch (\Exception $e) {}
                 
                 // build equal relationship
@@ -272,7 +272,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             } else {
                 // build as no readygo user
                 try {
-                    $this->buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber,$create_time);
+                    $this->buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber, $create_time);
                 } catch (\Exception $e) {}
             }
             $this->compareUser = $user;
@@ -320,6 +320,8 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             where id = '$id'";
         $adapter->query($sql)->execute();
     }
+
+   
 }
 
 ?>
