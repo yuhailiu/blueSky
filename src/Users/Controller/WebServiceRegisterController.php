@@ -58,7 +58,7 @@ class WebServiceRegisterController extends CommController
 
     protected function informOthers($phoneNumber)
     {
-        $sql = "UPDATE relationship SET `status` = '1' WHERE helper = '$phoneNumber' ";
+        $sql = "UPDATE relationship SET `status` = '1' WHERE helper = '$phoneNumber' and status <> '3'";
         $adapter = $this->getAdapter();
         $rows = $adapter->query($sql)->execute();
         return $rows->getAffectedRows();

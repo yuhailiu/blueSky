@@ -41,9 +41,13 @@ class CommController extends AbstractActionController
 
     protected function getUserByPhoneNumberOnly($phoneNumber)
     {
-        $userTable = $this->getServiceLocator()->get('UserTable');
-        $row = $userTable->getUserByPhoneNumberOnly($phoneNumber);
-        return $row;
+        if (strlen($phoneNumber) > 4) {
+            $userTable = $this->getServiceLocator()->get('UserTable');
+            $row = $userTable->getUserByPhoneNumberOnly($phoneNumber);
+            return $row;
+        }else {
+            throw new \Exception("phoneNumberError");
+        }
     }
 
     protected function getCommentById($id)

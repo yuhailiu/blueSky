@@ -339,6 +339,17 @@ class MyUtils
         $number = preg_replace("/\\D/", "", $number);
         return $number;
     }
+
+    public static function deletePhoneNumber86($phoneNumber)
+    {
+        $phoneNumber = trim($phoneNumber);
+        $pattern = '/^((\+86)|(86)|(0086))/';
+        $phoneNumber = preg_replace($pattern, '', $phoneNumber);
+        if (strlen($phoneNumber) < 5) {
+            $phoneNumber = null;
+        }
+        return $phoneNumber;
+    }
     
     // /**
     // * push message to iPhones

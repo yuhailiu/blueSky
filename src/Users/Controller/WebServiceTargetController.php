@@ -450,6 +450,36 @@ class WebServiceTargetController extends CommController
         }
     }
 
+    public function deleteHelpersFromTargetAction()
+    {
+        MyUtils::inspector();
+        MyUtils::inspector1();
+        $sessionCode = $_POST["sessionCode"];
+        $phoneNumber = $_POST["phoneNumber"];
+        try {
+            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+        } catch (\Exception $e) {
+            $flag = "invalidUser";
+            return $this->returnJson(array(
+                "flag" => $flag
+            ));
+        }
+        $target_id = $_POST["target_id"];
+        $members = $_POST["members"];
+        //does the user has right
+        //get and parse helper phoneNumbers
+        //delete the helpers if it's not a agreed helper
+        
+        return $this->returnJson(array(
+            "flag" => "successDeleteHelpers"
+        ));
+    }
+    
+    protected function deleteMembersFromTarget()
+    {
+        
+    }
+
     public function deleteTargetAction()
     {
         MyUtils::inspector();
@@ -869,9 +899,9 @@ class WebServiceTargetController extends CommController
     }
 
     /**
-     * 
-     * @param unknown $target_id
-     * @param unknown $target_status
+     *
+     * @param unknown $target_id            
+     * @param unknown $target_status            
      */
     protected function updateUserNotificationNumber($target_id, $target_status)
     {

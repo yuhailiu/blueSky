@@ -98,9 +98,11 @@ class WebServiceHelperController extends CommController
         }
         
         $status = $_POST["status"];
+        $lastGetTime = $_POST["lastGetTime"];
+        $lastGetTime = $lastGetTime ? $lastGetTime : 0;
         try {
-            $helpers = $this->getHelpersByOwnerId($this->user->id, $status);
-            // $helpers = $this->NewGetHelpersByOwnerId($this->user->id, $status);
+//             $helpers = $this->getHelpersByOwnerId($this->user->id, $status);
+            $helpers = $this->newGetHelpersByOwnerId($this->user->id, $status, $lastGetTime);
             $flag = "successGetHelpers";
         } catch (\Exception $e) {
             $flag = "failedGetHelper";
@@ -139,30 +141,22 @@ class WebServiceHelperController extends CommController
         }
         return $helpers;
     }
-
-    /**
-     *
-     * @param string $ownerId            
-     * @param string $status            
-     * @return helpers helpers PhoneNumber and photoName
-     */
-    protected function NewGetHelpersByOwnerId($ownerId, $status)
+    
+    protected function newGetHelpersByOwnerId($ownerId, $status, $lastGetTime)
     {
         if ($status) {
             if (MyUtils::isValidateStatus($status)) {
-                $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
-                    WHERE
-                    owner = '$ownerId' and `status` ='$status'
-                    and relationship.helper = users.phoneNumber
-                    ORDER BY create_time DESC";
+                $sql = "select * from relationship WHERE
+                owner = '$ownerId' and `status` = '$status' 
+                and create_time > '$lastGetTime'
+                ORDER BY create_time DESC";
             } else {
                 $sql = null;
             }
         } else {
-            $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
-                WHERE
-                owner = '$ownerId' and `status` <> 3
-                and relationship.helper = users.phoneNumber
+            $sql = "select * from relationship WHERE
+                owner = '$ownerId' and status <> '4'
+                and create_time > '$lastGetTime'
                 ORDER BY create_time DESC";
         }
         
@@ -175,6 +169,42 @@ class WebServiceHelperController extends CommController
         }
         return $helpers;
     }
+
+//     /**
+//      *
+//      * @param string $ownerId            
+//      * @param string $status            
+//      * @return helpers helpers PhoneNumber and photoName
+//      */
+//     protected function NewGetHelpersByOwnerId($ownerId, $status)
+//     {
+//         if ($status) {
+//             if (MyUtils::isValidateStatus($status)) {
+//                 $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
+//                     WHERE
+//                     owner = '$ownerId' and `status` ='$status'
+//                     and relationship.helper = users.phoneNumber
+//                     ORDER BY create_time DESC";
+//             } else {
+//                 $sql = null;
+//             }
+//         } else {
+//             $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
+//                 WHERE
+//                 owner = '$ownerId' and `status` <> 3
+//                 and relationship.helper = users.phoneNumber
+//                 ORDER BY create_time DESC";
+//         }
+        
+//         $adapter = $this->getAdapter();
+//         $rows = $adapter->query($sql)->execute();
+//         // push the result to a helpers array
+//         $helpers = array();
+//         foreach ($rows as $row) {
+//             array_push($helpers, $row);
+//         }
+//         return $helpers;
+//     }
 
     /**
      *
@@ -228,6 +258,7 @@ class WebServiceHelperController extends CommController
         
         $helperPhoneNumber = $_POST["helperPhoneNumber"];
         $helperPhoneNumber = str_replace(" ", "", $helperPhoneNumber);
+        $helperPhoneNumber = MyUtils::deletePhoneNumber86($helperPhoneNumber);
         if (MyUtils::isValidateTel($helperPhoneNumber)) {
             try {
                 $rows = $this->removerHelperByPhoneNumber($helperAreaCode, $helperPhoneNumber);
@@ -280,6 +311,7 @@ class WebServiceHelperController extends CommController
         }
         $helperPhoneNumber = $_POST["helperPhoneNumber"];
         $helperPhoneNumber = MyUtils::clearNumber($helperPhoneNumber);
+        $helperPhoneNumber = MyUtils::deletePhoneNumber86($helperPhoneNumber);
         if (MyUtils::isValidateTel($helperPhoneNumber)) {
             try {
                 if ($helperPhoneNumber == $this->user->phoneNumber) {
@@ -329,14 +361,15 @@ class WebServiceHelperController extends CommController
         }
         
         $user = new User();
+        $create_time = mktime();
         $user = $this->user;
-        $sql = "INSERT INTO relationship (owner, helper, status) 
-            VALUES ('$user->id', '$helperPhoneNumber', '$status')";
+        $sql = "INSERT INTO relationship (owner, helper, status, create_time) 
+            VALUES ('$user->id', '$helperPhoneNumber', '$status', '$create_time')";
         $rows = $adapter->query($sql)->execute();
         // if it's an exsite user, add helper automaticatly
         if ($helperId > 10) {
             try {
-                $this->buildEqualRelationship($adapter, $helperId, $user->phoneNumber);
+                $this->buildEqualRelationship($adapter, $helperId, $user->phoneNumber, $create_time);
             } catch (\Exception $e) {
                 // has builded
             }
@@ -344,10 +377,10 @@ class WebServiceHelperController extends CommController
         return $rows->getAffectedRows();
     }
 
-    protected function buildEqualRelationship($adapter, $helperId, $phoneNumber)
+    protected function buildEqualRelationship($adapter, $helperId, $phoneNumber, $create_time)
     {
-        $sql = "INSERT INTO relationship (owner, helper, status)
-        VALUES ('$helperId', '$phoneNumber', '1')";
+        $sql = "INSERT INTO relationship (owner, helper, status, create_time)
+        VALUES ('$helperId', '$phoneNumber', '1', '$create_time')";
         $adapter->query($sql)->execute();
     }
 
@@ -365,6 +398,7 @@ class WebServiceHelperController extends CommController
         
         $blockPhoneNumber = $_POST["blockPhoneNumber"];
         $blockPhoneNumber = MyUtils::clearNumber($blockPhoneNumber);
+        $blockPhoneNumber = MyUtils::deletePhoneNumber86($blockPhoneNumber);
         if (MyUtils::isValidateTel($blockPhoneNumber)) {
             $action = $_POST["action"];
             if ($action == "releaseBlock") {
@@ -404,20 +438,20 @@ class WebServiceHelperController extends CommController
         $adapter = $this->getAdapter();
         $rows = $adapter->query($sql)->execute();
         $status = $rows->current();
-        
+        $create_time = mktime();
         if ($status == 3) {
             // return 0;
             return 0;
         } else 
             if ($status > 0) {
                 // update status to 3
-                $sql = "UPDATE relationship SET relationship.`status` = '3'
+                $sql = "UPDATE relationship SET relationship.`status` = '3', create_time = '$create_time'
                     where `owner` = '$user->id' and helper = '$phoneNumber'";
                 $rows = $adapter->query($sql)->execute();
             } else {
                 // create new status
-                $sql = "INSERT INTO relationship (owner, helper, status)
-                    VALUES ('$user->id', '$phoneNumber', '3')";
+                $sql = "INSERT INTO relationship (owner, helper, status, create_time)
+                    VALUES ('$user->id', '$phoneNumber', '3', '$create_time')";
                 $rows = $adapter->query($sql)->execute();
             }
         return $rows->getAffectedRows();

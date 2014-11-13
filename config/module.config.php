@@ -12,7 +12,7 @@ return array(
             
             'Users\Controller\WebServiceLogin' => 'Users\Controller\WebServiceLoginController',
             'Users\Controller\WebServiceRegister' => 'Users\Controller\WebServiceRegisterController',
-            'Users\Controller\WebServiceHelper' => 'Users\Controller\WebServiceHelperController',
+            'Users\Controller\WebServiceHelper' => 'Users\Controller\WebServiceHelper1Controller',
             'Users\Controller\WebServiceTarget' => 'Users\Controller\WebServiceTarget1Controller',
             'Users\Controller\WebServiceTransaction' => 'Users\Controller\WebServiceTransactionController',
             'Users\Controller\WebServiceImageUpLoad' => 'Users\Controller\WebServiceImageUpLoadController',
@@ -21,7 +21,7 @@ return array(
             'Users\Controller\CheckNewestVersion' => 'Users\Controller\CheckNewestVersionController',
             'Users\Controller\Comment' => 'Users\Controller\WebServiceCommentController',
             
-            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceHelper1Controller'
+            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceHelper2Controller'
         )
     ),
     'router' => array(

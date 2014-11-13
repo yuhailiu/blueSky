@@ -33,7 +33,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         try {
             $this->getUserBySessionCode($sessionCode, $phoneNumber);
         } catch (\Exception $e) {
-            $flag = $e->getMessage();
+            $flag = "invalidUser";
             return $this->returnJson(array(
                 "flag" => $flag
             ));
@@ -44,7 +44,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         try {
             $members = $this->parseAddressBookPhoneNumber($addressBookPhoneNumber);
         } catch (\Exception $e) {
-            $flag = $e->getMessage();
+            $flag = "failedUploadAddressBook";
             return $this->returnJson(array(
                 "flag" => $flag
             ));
@@ -53,7 +53,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         try {
             $this->saveMembers($members);
         } catch (\Exception $e) {
-            $flag = $e->getMessage();
+            $flag = "failedUploadAddressBook";
             return $this->returnJson(array(
                 "flag" => $flag
             ));
@@ -110,7 +110,7 @@ class WebServiceHelper1Controller extends WebServiceHelperController
                 // start push
                 ignore_user_abort(); // 关掉浏览器，PHP脚本也可以继续执行.
                 set_time_limit(0); // 通过set_time_limit(0)可以让程序无限制的执行下去
-                $interval = 1; // 每隔1s运行
+                $interval = 5; // 每隔1s运行
                 try {
                     $this->repeateMatchAddress($interval);
                 } catch (\Exception $e) {
@@ -194,10 +194,10 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             and action = 'matchAddress'";
         $rows = $adapter->query($sql)->execute();
         $switch = $rows->current()["switch"];
-        if ($switch == 'on') {
-            $flag = true;
-        } else {
+        if ($switch == 'off') {
             $flag = false;
+        } else {
+            $flag = true;
         }
         return $flag;
     }
@@ -250,53 +250,56 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             }
             
             $helperPhoneNumber = $userAndphoneNumber["phoneNumber_addressbook"];
+            $helperPhoneNumber = MyUtils::deletePhoneNumber86($helperPhoneNumber);
             // check phoneNumber status
             try {
                 $helper = $this->getUserByPhoneNumberOnly($helperPhoneNumber);
-            } catch (\Exception $e) {}
-            
+            } catch (\Exception $e) {
+                $helper = null;
+            }
             // if it's readygo user add it as 1
+            $create_time = mktime();
             if ($helper->id > 10) {
                 // build as readygo user
                 try {
-                    $this->buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber);
+                    $this->buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber,$create_time);
                 } catch (\Exception $e) {}
                 
                 // build equal relationship
                 try {
-                    $this->buildEqualRelationship($helper->id, $user->phoneNumber);
+                    $this->buildEqualRelationship($helper->id, $user->phoneNumber, $create_time);
                 } catch (\Exception $e) {}
             } else {
                 // build as no readygo user
                 try {
-                    $this->buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber);
+                    $this->buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber,$create_time);
                 } catch (\Exception $e) {}
             }
             $this->compareUser = $user;
         }
     }
 
-    protected function buildEqualRelationship($helperId, $phoneNumber)
+    protected function buildEqualRelationship($helperId, $phoneNumber, $create_time)
     {
         $adapter = $this->getAdapter();
-        $sql = "INSERT INTO relationship (owner, helper, status)
-        VALUES ('$helperId', '$phoneNumber', '1')";
+        $sql = "INSERT INTO relationship (owner, helper, status, create_time)
+        VALUES ('$helperId', '$phoneNumber', '1', '$create_time')";
         $adapter->query($sql)->execute();
     }
 
-    protected function buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber)
+    protected function buildRelationshipAsReadyGoUser($userId, $helperPhoneNumber, $create_time)
     {
         $adapter = $this->getAdapter();
-        $sql = "INSERT INTO relationship (owner, helper, status)
-        VALUES ('$userId', '$helperPhoneNumber', '1')";
+        $sql = "INSERT INTO relationship (owner, helper, status, create_time)
+        VALUES ('$userId', '$helperPhoneNumber', '1', '$create_time')";
         $adapter->query($sql)->execute();
     }
 
-    protected function buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber)
+    protected function buildRelationshipAsNoReadyGoUser($userId, $helperPhoneNumber, $create_time)
     {
         $adapter = $this->getAdapter();
-        $sql = "INSERT INTO relationship (owner, helper, status)
-        VALUES ('$userId', '$helperPhoneNumber', '2')";
+        $sql = "INSERT INTO relationship (owner, helper, status, create_time)
+        VALUES ('$userId', '$helperPhoneNumber', '4', '$create_time')";
         $adapter->query($sql)->execute();
     }
 
