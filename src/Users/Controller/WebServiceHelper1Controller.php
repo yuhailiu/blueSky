@@ -65,15 +65,6 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         ));
     }
 
-//     protected function parseAddressBookPhoneNumber($addressBookPhoneNumber)
-//     {
-//         if (strlen($addressBookPhoneNumber) > 5) {
-//             $members = MyUtils::changeStringtoArray($addressBookPhoneNumber);
-//         } else {
-//             throw new \Exception("addressBookPhoneNumberError");
-//         }
-//         return $members;
-//     }
 
     protected function saveMembers($members)
     {

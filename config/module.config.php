@@ -10,7 +10,7 @@ return array(
     'controllers' => array(
         'invokables' => array(
             
-            'Users\Controller\WebServiceLogin' => 'Users\Controller\WebServiceLoginController',
+            'Users\Controller\WebServiceLogin' => 'Users\Controller\WebServiceLogin1Controller',
             'Users\Controller\WebServiceRegister' => 'Users\Controller\WebServiceRegisterController',
             'Users\Controller\WebServiceHelper' => 'Users\Controller\WebServiceHelper1Controller',
             'Users\Controller\WebServiceTarget' => 'Users\Controller\WebServiceTarget1Controller',
