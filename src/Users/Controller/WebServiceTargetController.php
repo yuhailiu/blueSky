@@ -124,6 +124,30 @@ class WebServiceTargetController extends CommController
         }
     }
 
+    /**
+     * agree, deleteByCreater and deleteByCreaterAgain target return false
+     *
+     * @param unknown $target_id            
+     * @return boolean
+     */
+    protected function isUpdateableTargetById1($target_id)
+    {
+        $user = $this->user;
+        $sql = "SELECT * from targetMembers, target
+    	where target.target_id = '$target_id' and members_id = '$user->id'
+    	and (member_status = 'agree'
+    	or target.target_status = 'deleteByCreater' or target.target_status = 'deleteByCreaterAgain')
+    	and target.target_id = targetMembers.target_id";
+        $adapter = $this->getAdapter();
+        
+        $rows = $adapter->query($sql)->execute();
+        if ($rows->count() > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     protected function getHelpersByOwnerId($ownerId, $status)
     {
         if ($status) {
@@ -808,7 +832,7 @@ class WebServiceTargetController extends CommController
         $last_update_time = mktime();
         if (MyUtils::isRightStatus($target_status) and $target_id > 0) {
             // check target current status
-            if ($this->isUpdateableTargetById($target_id)) {
+            if ($this->isUpdateableTargetById1($target_id)) {
                 try {
                     $updateResult = $this->newUpdateStatusByTargetId($target_status, $target_id, $last_update_time);
                     if ($updateResult > 0) {
