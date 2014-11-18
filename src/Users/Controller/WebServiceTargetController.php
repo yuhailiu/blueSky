@@ -1026,6 +1026,25 @@ class WebServiceTargetController extends CommController
         $targetMembersTable = $this->getServiceLocator()->get('TargetMembersTable');
         $targetMembersTable->saveTargetMembers($targetMember);
     }
+    
+    /**
+     * if target creater id equal user id return true
+     * 
+     * @param unknown $target_id
+     * @return boolean
+     */
+
+    protected function isCreaterOfTarget($target_id)
+    {
+        $user = $this->user;
+        $target = $this->getTargetById($target_id);
+        if ($user->id == $target->target_creater) {
+            return true;
+        } else {
+            $this->createrId = $target->target_creater;
+            return false;
+        }
+    }
 }
 
 ?>

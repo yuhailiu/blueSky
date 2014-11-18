@@ -6,6 +6,7 @@ use Users\Model\Comment;
 use Users\Tools\MyUtils;
 use Users\Model\PushInfo;
 use Users\Model\Notification;
+use Users\Model\Target;
 
 class WebServiceCommentController extends WebServiceTargetController
 {
@@ -42,14 +43,13 @@ class WebServiceCommentController extends WebServiceTargetController
             date_default_timezone_set('PRC');
             $create_time = mktime();
             $this->createComment($comment, $target_id, $create_time);
+            $flag = "successCreateComment";
         } catch (\Exception $e) {
-            $flag = $e->getMessage();
-            return $this->returnJson(array(
-                "flag" => $flag
-            ));
+//             throw new \Exception($e);
+            $flag = "failedCreateComment";
         }
         return $this->returnJson(array(
-            "flag" => "successCreateComment",
+            "flag" => $flag,
             "create_time" => $create_time,
             "comment_id" => $this->comment->id
         ));
@@ -71,6 +71,10 @@ class WebServiceCommentController extends WebServiceTargetController
             } catch (\Exception $e) {
                 throw new \Exception($e);
             }
+            // is commentable target
+            if (! $this->isCommentableTarget($target)) {
+                throw new \Exception("uncommentableTarget");
+            }
             $obj->create_user = $user->id;
             $obj->create_time = $create_time;
             try {
@@ -87,6 +91,22 @@ class WebServiceCommentController extends WebServiceTargetController
         } else {
             throw new \Exception("targetIdErro");
         }
+    }
+
+    protected function isCommentableTarget(Target $target)
+    {
+        $user = $this->user;
+        try {
+            if ($target->target_end_time < mktime()) {
+                throw new \Exception("overtime");
+            }
+            if ($target->target_creater != $user->id && !$this->isMemberOfTarget($target->target_id)) {
+                throw new \Exception("noRight");
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+        return true;
     }
 
     protected function saveComment(Comment $comment)
@@ -261,19 +281,18 @@ class WebServiceCommentController extends WebServiceTargetController
         }
         return $comments;
     }
-
-    protected function isCreaterOfTarget($target_id)
-    {
-        $user = $this->user;
-        $target = $this->getTargetById($target_id);
-        if ($user->id == $target->target_creater) {
-            return true;
-        } else {
-            $this->createrId = $target->target_creater;
-            return false;
-        }
-    }
-
+    
+    // protected function isCreaterOfTarget($target_id)
+    // {
+    // $user = $this->user;
+    // $target = $this->getTargetById($target_id);
+    // if ($user->id == $target->target_creater) {
+    // return true;
+    // } else {
+    // $this->createrId = $target->target_creater;
+    // return false;
+    // }
+    // }
     protected function getCommentsByTargetCreater($target_id, $lastGetTime)
     {
         if (strlen($lastGetTime) > 5) {

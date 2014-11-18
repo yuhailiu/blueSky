@@ -101,8 +101,9 @@ class WebServiceHelperController extends CommController
         $lastGetTime = $_POST["lastGetTime"];
         $lastGetTime = $lastGetTime ? $lastGetTime : 0;
         try {
-//             $helpers = $this->getHelpersByOwnerId($this->user->id, $status);
-            $helpers = $this->newGetHelpersByOwnerId($this->user->id, $status, $lastGetTime);
+            // $helpers = $this->getHelpersByOwnerId($this->user->id, $status);
+            // $helpers = $this->newGetHelpersByOwnerId($this->user->id, $status, $lastGetTime);
+            $helpers = $this->getHelpersByOwnerIdWithComments($this->user->id, $status, $lastGetTime);
             $flag = "successGetHelpers";
         } catch (\Exception $e) {
             $flag = "failedGetHelper";
@@ -141,7 +142,43 @@ class WebServiceHelperController extends CommController
         }
         return $helpers;
     }
-    
+
+    protected function getHelpersByOwnerIdWithComments($ownerId, $status, $lastGetTime)
+    {
+        if ($status) {
+            if (MyUtils::isValidateStatus($status)) {
+                $sql = "SELECT owner, helper, create_time, status,
+                helper_areaCode, users.personalComment 
+                from relationship, users
+                where `owner` = '$ownerId'
+                and relationship.helper = users.phoneNumber
+                and status = '$status'
+                and create_time >= '$lastGetTime'
+                ORDER BY create_time DESC";
+            } else {
+                $sql = null;
+            }
+        } else {
+            $sql = "SELECT owner, helper, create_time, status,
+                helper_areaCode, users.personalComment 
+                from relationship, users
+                where `owner` = '$ownerId'
+                and relationship.helper = users.phoneNumber
+                and status <> '4'
+                and create_time >= '$lastGetTime'
+                ORDER BY create_time DESC";
+        }
+        
+        $adapter = $this->getAdapter();
+        $rows = $adapter->query($sql)->execute();
+        // push the result to a helpers array
+        $helpers = array();
+        foreach ($rows as $row) {
+            array_push($helpers, $row);
+        }
+        return $helpers;
+    }
+
     protected function newGetHelpersByOwnerId($ownerId, $status, $lastGetTime)
     {
         if ($status) {
@@ -169,43 +206,43 @@ class WebServiceHelperController extends CommController
         }
         return $helpers;
     }
-
-//     /**
-//      *
-//      * @param string $ownerId            
-//      * @param string $status            
-//      * @return helpers helpers PhoneNumber and photoName
-//      */
-//     protected function NewGetHelpersByOwnerId($ownerId, $status)
-//     {
-//         if ($status) {
-//             if (MyUtils::isValidateStatus($status)) {
-//                 $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
-//                     WHERE
-//                     owner = '$ownerId' and `status` ='$status'
-//                     and relationship.helper = users.phoneNumber
-//                     ORDER BY create_time DESC";
-//             } else {
-//                 $sql = null;
-//             }
-//         } else {
-//             $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
-//                 WHERE
-//                 owner = '$ownerId' and `status` <> 3
-//                 and relationship.helper = users.phoneNumber
-//                 ORDER BY create_time DESC";
-//         }
-        
-//         $adapter = $this->getAdapter();
-//         $rows = $adapter->query($sql)->execute();
-//         // push the result to a helpers array
-//         $helpers = array();
-//         foreach ($rows as $row) {
-//             array_push($helpers, $row);
-//         }
-//         return $helpers;
-//     }
-
+    
+    // /**
+    // *
+    // * @param string $ownerId
+    // * @param string $status
+    // * @return helpers helpers PhoneNumber and photoName
+    // */
+    // protected function NewGetHelpersByOwnerId($ownerId, $status)
+    // {
+    // if ($status) {
+    // if (MyUtils::isValidateStatus($status)) {
+    // $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
+    // WHERE
+    // owner = '$ownerId' and `status` ='$status'
+    // and relationship.helper = users.phoneNumber
+    // ORDER BY create_time DESC";
+    // } else {
+    // $sql = null;
+    // }
+    // } else {
+    // $sql = "select `owner`, helper, create_time, `status`,helper_areaCode, users.fileName, users.thumbnail from relationship, users
+    // WHERE
+    // owner = '$ownerId' and `status` <> 3
+    // and relationship.helper = users.phoneNumber
+    // ORDER BY create_time DESC";
+    // }
+    
+    // $adapter = $this->getAdapter();
+    // $rows = $adapter->query($sql)->execute();
+    // // push the result to a helpers array
+    // $helpers = array();
+    // foreach ($rows as $row) {
+    // array_push($helpers, $row);
+    // }
+    // return $helpers;
+    // }
+    
     /**
      *
      * @param unknown $targets            
