@@ -21,7 +21,8 @@ return array(
             'Users\Controller\CheckNewestVersion' => 'Users\Controller\CheckNewestVersionController',
             'Users\Controller\Comment' => 'Users\Controller\WebServiceCommentController',
             
-            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceHelper2Controller'
+            'Users\Controller\TestNewController' => 'Users\Controller\WebServiceHelper2Controller',
+            'Users\Controller\Management' => 'Users\Controller\WebServiceManagementController',
         )
     ),
     'router' => array(
@@ -44,6 +45,23 @@ return array(
                     )
                 )
             ), // end TestNewController
+            'managementController' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    // Change this to something specific to your module
+                    'route' => '/Management[/:action]',
+                    'constraints' => array(
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*'
+                    ),
+                    'defaults' => array(
+                        // Change this value to reflect the namespace in which
+                        // the controllers for your module are found
+                        '__NAMESPACE__' => 'Users\Controller',
+                        'controller' => 'Management',
+                        'action' => 'index'
+                    )
+                )
+            ), // end ManagementController
                // set routes
             'comment' => array(
                 'type' => 'Segment',
