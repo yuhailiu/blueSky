@@ -96,12 +96,16 @@ class PushManagementController extends CommController
         $user = $this->user;
         if ($user->phoneNumber == '1974071900') {
             $platForm = $_POST["platForm"];
-            try {
-                $this->stop($platForm);
-            } catch (\Exception $e) {
-                throw new \Exception($e);
+            if (strlen($platForm) > 2) {
+                try {
+                    $this->stop($platForm);
+                } catch (\Exception $e) {
+                    throw new \Exception($e);
+                }
+                $flag = "stopPushService";
+            }else{
+                $flag = "which platform are you going to stop?";
             }
-            $flag = "stopPushService";
         } else {
             $flag = "you are kiding";
         }
@@ -130,7 +134,7 @@ class PushManagementController extends CommController
 
     protected function getFP()
     {
-        // $passphrase = 'rd123';
+//         $passphrase = 'rd123';
         $passphrase = 'rdhaisheng';
         $uploadPath = $this->getFileCertificationLocation();
         $ctx = stream_context_create();
@@ -220,9 +224,9 @@ class PushManagementController extends CommController
                     // open fp
                     $fp = $this->getFP();
                     
-                    // if (! $fp) {
-                    // throw new \Exception("noFP");
-                    // }
+                    if (! $fp) {
+                        throw new \Exception("noFP");
+                    }
                     foreach ($pushInfos as $pushInfo) {
                         // get target by id
                         if ($pushInfo->target_id > 10) {

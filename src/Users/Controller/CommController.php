@@ -170,4 +170,19 @@ class CommController extends AbstractActionController
         }
         return $members;
     }
+
+    protected function uploadFile($uploadFile, $adapter, $path)
+    {
+        // creater the filename
+        $sysName = MyUtils::getRandChar(20);
+        
+        $adapter->addFilter('Rename', $sysName, $uploadFile['name']);
+        
+        // Save the update file
+        if (! $adapter->receive($uploadFile["name"])) {
+            throw new \Exception("can't write the file to filesystem");
+        } else {
+            return $sysName;
+        }
+    }
 }

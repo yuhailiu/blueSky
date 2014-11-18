@@ -230,6 +230,7 @@ return array(
     'module_config' => array(
         'upload_location' => __DIR__ . '/../data/uploads',
         'image_upload_location' => __DIR__ . '/../../../data/images',
+        'file_comment_upload_location' => __DIR__ . '/../../../data/commentFile',
         'search_index' => __DIR__ . '/../data/search_index',
         'certifications' => __DIR__ . '/../../../data/certifications',
         'download' => __DIR__ . '/../../../data/download'

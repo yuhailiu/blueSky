@@ -7,6 +7,7 @@ use Users\Tools\MyUtils;
 use Users\Model\PushInfo;
 use Users\Model\Notification;
 use Users\Model\Target;
+use Zend\Stdlib\ArrayUtils;
 
 class WebServiceCommentController extends WebServiceTargetController
 {
@@ -45,7 +46,7 @@ class WebServiceCommentController extends WebServiceTargetController
             $this->createComment($comment, $target_id, $create_time);
             $flag = "successCreateComment";
         } catch (\Exception $e) {
-//             throw new \Exception($e);
+            // throw new \Exception($e);
             $flag = "failedCreateComment";
         }
         return $this->returnJson(array(
@@ -100,7 +101,7 @@ class WebServiceCommentController extends WebServiceTargetController
             if ($target->target_end_time < mktime()) {
                 throw new \Exception("overtime");
             }
-            if ($target->target_creater != $user->id && !$this->isMemberOfTarget($target->target_id)) {
+            if ($target->target_creater != $user->id && ! $this->isMemberOfTarget($target->target_id)) {
                 throw new \Exception("noRight");
             }
         } catch (\Exception $e) {
@@ -126,7 +127,14 @@ class WebServiceCommentController extends WebServiceTargetController
         $comment = $this->comment;
         $user = $this->user;
         $pushInfo = new PushInfo();
-        $message = '您的目标“' . $target->target_name . '” 有一个进度更新“' . $comment->comment . '”。';
+        if (strlen($comment->comment) > 0) {
+            $message = '您的目标“' . $target->target_name . '” 有一个进度更新“' . $comment->comment . '”。';
+        }else if(strlen($comment->file_name) > 19){
+            $message = '您的目标“' . $target->target_name . '” 有一个进度更新文件。';
+        }else{
+            throw new \Exception("messageError");
+        }
+        
         $pushInfo->message = $message;
         $pushInfo->comment_id = $comment->id;
         if ($target->target_creater == $user->id) {
@@ -342,6 +350,115 @@ class WebServiceCommentController extends WebServiceTargetController
             array_push($results, $row);
         }
         return $results;
+    }
+
+    public function fileUploadAction()
+    {
+        $flag = "fileUploadAction";
+        MyUtils::inspector();
+        MyUtils::inspector1();
+        $sessionCode = $_POST["sessionCode"];
+        $phoneNumber = $_POST["phoneNumber"];
+        try {
+            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+        } catch (\Exception $e) {
+            $flag = $e->getMessage();
+            return $this->returnJson(array(
+                "flag" => $flag
+            ));
+        }
+        
+        $request = $this->getRequest();
+        $uploadFile = $this->params()->fromFiles('comment_file');
+        $target_id = $_POST["target_id"];
+        
+        $uploadPath = $this->getFileUploadLocation();
+        $adapter = new \Zend\File\Transfer\Adapter\Http();
+        $adapter->setDestination($uploadPath);
+        
+        $adapter->addValidator('Extension', false, 'jpg, png, bmp, gif, jpeg');
+        
+        // Limit the size of all files to be uploaded to maximum 10MB and mimimum 20 bytes
+        $adapter->addValidator('FilesSize', false, array(
+            'min' => 1,
+            'max' => '10MB'
+        ));
+        
+        if ($adapter->isValid() && $adapter->isValid()) {
+            // delete the old files
+            
+            if (strlen($this->user->fileName) > 2) {
+                try {
+                    $this->deleteOldImageFiles();
+                    $result = true;
+                } catch (\Exception $e) {
+                    $result = false;
+                }
+            } else {
+                $result = true;
+            }
+            if ($result) {
+                try {
+                    $this->NewUploadUserInfo($uploadFile, $adapter);
+                    $flag = "successUpLoadFile";
+                } catch (\Exception $e) {
+                    $flag = "failedUpLoadFile";
+                }
+            } else {
+                $flag = "failedDeleteOldFiles";
+            }
+        } else {
+            $flag = "invalidFile";
+        }
+        
+        $result = array(
+            "flag" => $flag
+        );
+        return $this->returnJson($result);
+    }
+
+    protected function fileUpload($uploadFile, $target_id)
+    {
+        $uploadPath = $this->getFileUploadLocation();
+        $adapter = new \Zend\File\Transfer\Adapter\Http();
+        $adapter->setDestination($uploadPath);
+        
+        
+        // Limit the size of all files to be uploaded to maximum 10MB and mimimum 20 bytes
+        $adapter->addValidator('FilesSize', false, array(
+            'min' => 1,
+            'max' => '10MB'
+        ));
+        
+        if ($adapter->isValid()) {
+            //save the file and get a name
+            $fileName = $this->uploadFile($uploadFile, $adapter, $uploadPath);
+            //save the file name to comment table
+            $comment = new Comment();
+            $comment->create_time = mktime();
+            $comment->create_user = $this->user->id;
+            $comment->file_name = $fileName;
+            $comment->target_id = $target_id;
+            $this->saveComment($comment);
+            //save comment to comment push
+            $this->saveCommentToPushStack();
+        } else {
+            $flag = "invalidFile";
+        }
+    }
+
+    protected function getFileUploadLocation()
+    {
+        // Fetch Configuration from Module Config
+        $config = $this->getServiceLocator()->get('config');
+        if ($config instanceof \Traversable) {
+            $config = ArrayUtils::iteratorToArray($config);
+        }
+        if (! empty($config['module_config']['file_comment_upload_location'])) {
+            return $config['module_config']['file_comment_upload_location'];
+        } else {
+            return FALSE;
+        }
     }
 }
 
