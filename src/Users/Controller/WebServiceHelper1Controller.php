@@ -31,7 +31,10 @@ class WebServiceHelper1Controller extends WebServiceHelperController
         $sessionCode = $_POST["sessionCode"];
         $phoneNumber = $_POST["phoneNumber"];
         try {
-            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+            $this->user = $this->getUserBySessionCode($sessionCode, $phoneNumber);
+            if ($this->user->phoneNumber != $phoneNumber) {
+                throw new \Exception("invalidUser");
+            }
         } catch (\Exception $e) {
             $flag = "invalidUser";
             return $this->returnJson(array(
@@ -64,7 +67,6 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             "currentTime" => mktime()
         ));
     }
-
 
     protected function saveMembers($members)
     {
@@ -311,8 +313,6 @@ class WebServiceHelper1Controller extends WebServiceHelperController
             where id = '$id'";
         $adapter->query($sql)->execute();
     }
-
-   
 }
 
 ?>

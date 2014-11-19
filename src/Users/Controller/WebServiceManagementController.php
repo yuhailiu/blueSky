@@ -48,12 +48,10 @@ class WebServiceManagementController extends CommController
     {
         MyUtils::inspector();
         MyUtils::inspector1();
-        $sessionCode = $_POST["sessionCode"];
-        $phoneNumber = $_POST["phoneNumber"];
         try {
-            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+            $this->authrizeUser($_POST["password"], $_POST["phoneNumber"], $_POST["areaCode"]);
         } catch (\Exception $e) {
-            $flag = "invalidUser";
+            $flag = $e->getMessage();
             return $this->returnJson(array(
                 "flag" => $flag
             ));

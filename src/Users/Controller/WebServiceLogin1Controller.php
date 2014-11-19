@@ -22,7 +22,10 @@ class WebServiceLogin1Controller extends WebServiceLoginController
         $phoneNumber = $_POST["phoneNumber"];
         $flag = 'updatePersonalCommentAction';
         try {
-            $this->getUserBySessionCode($sessionCode, $phoneNumber);
+            $this->user = $this->getUserBySessionCode($sessionCode, $phoneNumber);
+            if ($this->user->phoneNumber != $phoneNumber) {
+                throw new \Exception("invalidUser");
+            }
         } catch (\Exception $e) {
             $flag = "invalidUser";
             return $this->returnJson(array(
@@ -36,12 +39,12 @@ class WebServiceLogin1Controller extends WebServiceLoginController
             $flag = 'successUpdateComment';
         } catch (\Exception $e) {
             $flag = "failedUpdateComment";
-//         	   throw new \Exception($e);
+            // throw new \Exception($e);
         }
         
         $result = array(
             "flag" => $flag,
-            "currentTime" => $currentTime,
+            "currentTime" => $currentTime
         );
         return $this->returnJson($result);
     }
